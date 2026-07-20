@@ -932,7 +932,7 @@ const PROJ = {
 
   hwaseong:   { name:'화성 송산그린시티 공동주택 (EAA4/EAB9/EAA5/EAA12)',             co:'ITM Corporation Architects',      period:'2018 — 2020', type:'공동주택 / 실시설계',
     desc:'화성 송산그린시티 EAB9BL 공동주택 신축공사 실시설계.',
-    images: ['images/itm/hwaseong/01.jpg','images/itm/hwaseong/02.jpg'] },
+    images: ['images/itm/hwaseong/01.jpg'] },
 
   andong:     { name:'안동시 성곡동 단지형 연립주택',           co:'ITM Corporation Architects',      period:'2018 — 2020', type:'공동주택 / 실시설계',
     desc:'안동시 성곡동 테라스하우스 신축공사 실시설계.',
@@ -979,7 +979,7 @@ const EDU = {
     name: '학부', nameEn: 'Undergraduate', sub: '건축공학 학사 (4년제)',
     period: '2004.03 — 2010.02',
     desc: '',
-    images: ['images/education/daejin/01.jpg','images/education/daejin/02.jpg','images/education/daejin/03.jpg','images/education/daejin/04.jpg','images/education/daejin/05.jpg','images/education/daejin/06.jpg','images/education/daejin/07.jpg']
+    images: ['images/education/daejin/01.jpg','images/education/daejin/02.jpg','images/education/daejin/03.jpg','images/education/daejin/04.jpg','images/education/daejin/05.jpg','images/education/daejin/06.jpg']
   },
   gdl: {
     name: '지디엘건축사사무소', nameEn: 'GDL Architects', sub: '대리',
@@ -988,9 +988,9 @@ const EDU = {
     desc: '',
     images: [
       'images/gdl/01.jpg','images/gdl/02.jpg','images/gdl/03.jpg','images/gdl/04.jpg','images/gdl/05.jpg','images/gdl/06.jpg',
-      'images/gdl/07.jpg','images/gdl/08.jpg','images/gdl/09.jpg','images/gdl/10.jpg','images/gdl/11.jpg','images/gdl/12.jpg',
-      'images/gdl/13.jpg','images/gdl/14.jpg','images/gdl/15.jpg','images/gdl/16.jpg','images/gdl/17.jpg','images/gdl/18.jpg',
-      'images/gdl/19.jpg','images/gdl/20.jpg','images/gdl/21.jpg','images/gdl/22.jpg','images/gdl/23.jpg','images/gdl/24.jpg'
+      'images/gdl/09.jpg','images/gdl/10.jpg','images/gdl/11.jpg',
+      'images/gdl/13.jpg','images/gdl/14.jpg','images/gdl/15.jpg','images/gdl/17.jpg','images/gdl/18.jpg',
+      'images/gdl/19.jpg','images/gdl/20.jpg','images/gdl/21.jpg','images/gdl/22.jpg'
     ],
     projects: [
       { name:'트레저아일랜드 리조트동 계획안', year:'2015' },
@@ -1166,10 +1166,11 @@ function renderGallery(list, placeholderText) {
 
 function stepCarousel(dir) {
   const { list } = carState;
-  if (!list.length) return;
+  if (list.length <= 1) return;
   carState.index = (carState.index + dir + list.length) % list.length;
   document.getElementById('c-car-img').src = list[carState.index];
-  document.getElementById('c-car-count').textContent = `${carState.index + 1} / ${list.length}`;
+  const counter = document.getElementById('c-car-count');
+  if (counter) counter.textContent = `${carState.index + 1} / ${list.length}`;
 }
 
 /* 컨테이너 폭을 넘는 한 단어짜리 제목(예: "Undergraduate")이 단어 중간에서
