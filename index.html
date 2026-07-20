@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CH LEE — Architecture Portfolio</title>
+  <meta name="description" content="이찬희 (CH LEE) — Architectural Designer 포트폴리오. 주거·호스피탈리티 건축 설계 및 AI 자동화 알고리즘 개발.">
+  <meta name="robots" content="index, follow">
+  <!-- TODO: 실제 배포 도메인이 정해지면 아래 og:url / og:image / twitter:image 를 교체하세요 -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CH LEE Portfolio">
+  <meta property="og:title" content="CH LEE — Architecture Portfolio">
+  <meta property="og:description" content="이찬희 (CH LEE) — Architectural Designer 포트폴리오. 주거·호스피탈리티 건축 설계 및 AI 자동화 알고리즘 개발.">
+  <meta property="og:image" content="images/yegawon2/sungsan/01.jpg">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CH LEE — Architecture Portfolio">
+  <meta name="twitter:description" content="이찬희 (CH LEE) — Architectural Designer 포트폴리오. 주거·호스피탈리티 건축 설계 및 AI 자동화 알고리즘 개발.">
+  <meta name="twitter:image" content="images/yegawon2/sungsan/01.jpg">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230c0c0c'/%3E%3Ctext x='50' y='62' font-family='Helvetica,Arial,sans-serif' font-weight='700' font-size='42' fill='%23f0f0f0' text-anchor='middle'%3ECH%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --bg: #0c0c0c; --white: #f0f0f0; --line: rgba(240,240,240,.07); }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--white); font-family: 'Inter', Helvetica, Arial, sans-serif; overflow-x: hidden; cursor: none; word-break: keep-all; overflow-wrap: break-word; }
+
+    /* ── CURSOR ── */
+    #cur-dot  { position: fixed; z-index: 9999; width: 6px; height: 6px; background: white; border-radius: 50%; transform: translate(-50%,-50%); pointer-events: none; }
+    #cur-ring { position: fixed; z-index: 9998; width: 34px; height: 34px; border: 1px solid rgba(255,255,255,.38); border-radius: 50%; transform: translate(-50%,-50%); pointer-events: none; transition: width .25s, height .25s; }
+    body.hov #cur-ring { width: 52px; height: 52px; }
+    /* 터치 전용 기기(태블릿 등, 640px 초과 폭 포함)에서는 mousemove가 발생하지 않아
+       화면 중앙에 정지된 커서 잔상이 남는 문제 방지 */
+    @media (hover: none) {
+      #cur-dot, #cur-ring { display: none; }
+      body { cursor: auto; }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 950;                    /* above overlays(800), below cursor(9999) */
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 26px 56px;
+      pointer-events: all;             /* explicit — no mix-blend-mode interference */
+      background: rgba(12,12,12,.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-logo { font-size: 11px; letter-spacing: .32em; color: rgba(255,255,255,.65); text-decoration: none; cursor: none; transition: color .3s; font-weight: 400; }
+    .nav-logo:hover { color: white; }
+    .nav-menu { display: flex; gap: 44px; list-style: none; }
+    .nav-menu a { font-size: 9px; letter-spacing: .24em; color: rgba(255,255,255,.4); text-decoration: none; cursor: none; transition: color .3s; }
+    .nav-menu a:hover { color: white; }
+
+    /* ── COVER ── */
+    #cover { width: 100vw; height: 100vh; background: var(--bg); position: relative; overflow: hidden; }
+    #coverCanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .cv-label {
+      position: absolute; top: 80px; left: 56px; z-index: 10; pointer-events: none;
+      font-size: 8.5px; font-weight: 400;
+      letter-spacing: .22em; color: rgba(255,255,255,.28); text-transform: uppercase;
+    }
+    .cover-scroll {
+      position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      font-size: 8px; letter-spacing: .28em; color: rgba(255,255,255,.18);
+      z-index: 7; pointer-events: none;
+    }
+    .scroll-bar { width: 1px; height: 48px; background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent); animation: barPulse 2.2s ease-in-out infinite; }
+    @keyframes barPulse { 0%,100%{opacity:1;transform:scaleY(1)} 50%{opacity:.2;transform:scaleY(.5)} }
+
+    /* ── SECTION LABEL ── */
+    .section-tag { font-size: 8px; letter-spacing: .36em; color: rgba(255,255,255,.18); text-transform: uppercase; padding: 0 80px; margin-bottom: 96px; display: flex; align-items: center; gap: 20px; }
+    .section-tag::after { content:''; flex:1; height:1px; background:var(--line); }
+
+    /* ── TIMELINE ── */
+    #work { padding: 140px 0 160px; }
+    .timeline { position: relative; max-width: 820px; margin: 0 auto; padding: 0 20px; }
+    .tl-line-bg, .tl-line-glow { content:''; position:absolute; left:50%; top:0; bottom:0; width:1px; transform:translateX(-50%); }
+    .tl-line-bg   { background:rgba(255,255,255,.16); }
+
+    /* 세로줄은 처음부터 끝까지 동일한 밝기 — 시간의 흐름은 상시 순환하는 글로우로만 표현 */
+    .tl-line-glow { overflow:hidden; pointer-events:none; }
+    .tl-line-glow::after {
+      content:''; position:absolute; left:50%; bottom:-160px; width:3px; height:160px;
+      transform:translateX(-50%);
+      background:linear-gradient(to bottom, transparent, rgba(255,255,255,.85), transparent);
+      filter:blur(2.5px);
+      animation:tlGlowMove 4.5s linear infinite;
+    }
+    @keyframes tlGlowMove {
+      0%   { bottom:-160px; }
+      100% { bottom:100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tl-line-glow::after { animation:none; display:none; }
+    }
+
+    /* ── 연도 눈금축 (데스크톱 전용) ── */
+    .tl-ticks { position:absolute; left:50%; top:0; bottom:0; width:0; pointer-events:none; }
+    .tl-tick  { position:absolute; left:0; width:9px; height:1px; background:rgba(255,255,255,.14); transform:translate(-50%,-50%); }
+    .tl-tick-label { position:absolute; left:-38px; font-size:8px; letter-spacing:.06em; color:rgba(255,255,255,.16); transform:translateY(-50%); font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+    /* 연도축 모드: 항목을 실제 날짜에 비례해 절대 배치 */
+    .timeline.tl-axis-mode { position:relative; }
+    .timeline.tl-axis-mode .tl-item { position:absolute; left:0; right:0; margin:0; align-items:start; transition: opacity .65s ease, transform .65s ease, top .35s ease; }
+    .timeline.tl-axis-mode .tl-dot  { margin-top:3px; }
+    .tl-item { display: grid; grid-template-columns: 1fr 60px 1fr; align-items: center; margin-bottom: 60px; position: relative; opacity:0; transform:translateY(18px); transition: opacity .65s ease, transform .65s ease; }
+    .tl-item:last-child { margin-bottom: 0; }
+    .tl-item.visible { opacity:1; transform:translateY(0); }
+    .tl-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.45); justify-self:center; position:relative; z-index:2; transition:all .3s ease; }
+    .tl-item.edu .tl-dot { background:transparent; border:1px solid rgba(255,255,255,.28); width:9px; height:9px; }
+    .tl-item.current .tl-dot { background:var(--white); width:9px; height:9px; box-shadow:0 0 0 4px rgba(255,255,255,.08),0 0 18px rgba(255,255,255,.25); }
+    .tl-item.company:hover .tl-dot { background:var(--white); transform:scale(1.7); }
+    .tl-left  { padding-right: 34px; text-align: right; }
+    .tl-right { padding-left: 34px; }
+    .tl-period { font-size:8px; letter-spacing:.14em; color:rgba(255,255,255,.22); margin-bottom:7px; font-variant-numeric:tabular-nums; }
+    .tl-name   { font-size:14px; font-weight:400; letter-spacing:.02em; line-height:1.45; color:var(--white); transition:opacity .3s; }
+    .tl-name-kr{ font-size:10px; color:rgba(255,255,255,.28); margin-top:2px; letter-spacing:.03em; }
+    .tl-sub    { font-size:10px; color:rgba(255,255,255,.28); margin-top:5px; letter-spacing:.06em; }
+    .tl-item.company, .tl-item.edu { cursor: none; }
+    .tl-item.company:hover .tl-name, .tl-item.edu:hover .tl-name { opacity:.45; }
+
+    /* ── TIMELINE PROJECT PANEL (클릭식 아코디언) ──
+       .tl-item의 마지막 자식으로 DOM에 추가되어(모바일에서 항상 회사정보 다음에
+       옴) 데스크톱(축 모드)에서는 절대 위치로 회사 정보가 없는 반대쪽 여백에
+       나뭇가지처럼 옆으로 펼쳐진다. 스크롤 박스 대신 얇은 stem 라인으로 연결감을 준다. */
+    .tl-proj-panel {
+      position:absolute; top:0; width:calc(50% - 44px);
+      opacity:0; pointer-events:none; text-align:left; z-index:40;
+      transition:opacity .35s ease, transform .35s ease;
+      border-left:1px solid rgba(255,255,255,.1); padding-left:22px;
+    }
+    .tl-proj-panel.side-right { left:calc(50% + 30px); transform:translateX(-6px); }
+    /* 왼쪽 여백에 펼쳐질 땐 stem 라인이 가운데 축(점) 쪽인 오른쪽에 오도록 반전 */
+    .tl-proj-panel.side-left  { right:calc(50% + 30px); transform:translateX(6px); border-left:none; border-right:1px solid rgba(255,255,255,.1); padding-left:0; padding-right:22px; }
+    .tl-item.company.panel-open .tl-proj-panel { opacity:1; pointer-events:all; transform:translateX(0); }
+    .tl-toggle { display:inline-block; margin-left:7px; font-size:9px; color:rgba(255,255,255,.25); transition:transform .3s ease, color .3s ease; }
+    .tl-item.company.panel-open .tl-toggle { transform:rotate(180deg); color:rgba(255,255,255,.65); }
+    .tl-proj-item { display:flex; align-items:baseline; gap:9px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); transition:padding-left .25s ease; }
+    .tl-proj-item:not(.no-link) { cursor:none; }
+    .tl-proj-item:hover:not(.no-link) { padding-left:6px; }
+    /* SELECTED WORK = 작은 점 아이콘. 큰 텍스트 배지 대신 최소한의 시각 신호만 준다 */
+    .tl-proj-badge { flex-shrink:0; width:5px; height:5px; border-radius:50%; background:var(--white); box-shadow:0 0 6px rgba(255,255,255,.4); align-self:center; }
+    .tl-proj-pname { font-size:11px; font-weight:300; flex:1; line-height:1.4; transition:opacity .25s, color .25s; }
+    .tl-proj-item:hover:not(.no-link) .tl-proj-pname { opacity:.38; }
+    .tl-proj-item.no-link .tl-proj-pname { color:rgba(255,255,255,.4); }
+    .tl-proj-ptag { font-size:8px; letter-spacing:.1em; color:rgba(255,255,255,.17); flex-shrink:0; }
+    .tl-proj-year { font-size:8px; letter-spacing:.06em; color:rgba(255,255,255,.22); flex-shrink:0; font-variant-numeric:tabular-nums; }
+    /* "+N건 더보기" — 대표작 외 나머지 프로젝트를 접어두는 토글 */
+    .tl-proj-more summary { list-style:none; cursor:none; padding:9px 0; font-size:9px; letter-spacing:.06em; color:rgba(255,255,255,.3); transition:color .25s; }
+    .tl-proj-more summary::-webkit-details-marker { display:none; }
+    .tl-proj-more summary:hover { color:rgba(255,255,255,.7); }
+    .tl-proj-more summary::before { content:'＋ '; }
+    .tl-proj-more[open] summary::before { content:'－ '; }
+    .tl-proj-more[open] summary { color:rgba(255,255,255,.5); }
+    .tl-proj-arr { font-size:11px; color:rgba(255,255,255,.15); flex-shrink:0; transition:transform .25s, color .25s; }
+    .tl-proj-item:hover:not(.no-link) .tl-proj-arr { transform:translateX(5px); color:white; }
+
+    /* ── OVERLAYS ── */
+    .overlay { position:fixed; inset:0; z-index:960; background:var(--bg); transform:translateY(102%); transition:transform .65s cubic-bezier(.76,0,.24,1); overflow-y:auto; display:flex; flex-direction:column; }
+    .overlay.open { transform:translateY(0); }
+    .ov-bar { position:sticky; top:0; display:flex; justify-content:space-between; align-items:center; padding:22px 72px; background:rgba(12,12,12,.92); backdrop-filter:blur(24px); border-bottom:1px solid var(--line); z-index:10; gap:24px; }
+    .ov-crumb { font-size:8px; letter-spacing:.26em; color:rgba(255,255,255,.28); text-transform:uppercase; }
+    .ov-nav { display:flex; gap:28px; align-items:center; }
+    .ov-btn { font-size:8px; letter-spacing:.22em; color:rgba(255,255,255,.3); background:none; border:none; cursor:none; transition:color .25s; text-decoration:none; }
+    .ov-btn:hover { color:var(--white); }
+    .ov-sep { width:1px; height:12px; background:rgba(255,255,255,.12); }
+
+
+    /* C page — 좌: 고정 정보 패널 / 우: 이미지 슬라이드. 스크롤 없이 한 화면에 들어오도록
+       #c-ov 자체는 overflow:hidden, .c-body가 ov-bar를 제외한 나머지 높이를 꽉 채운다. */
+    #c-ov { overflow: hidden; }
+    .c-body { flex:1; min-height:0; display:grid; grid-template-columns:min(400px, 34vw) 1fr; padding:0; }
+    .c-info { padding:56px; display:flex; flex-direction:column; justify-content:center; overflow-y:auto; border-right:1px solid var(--line); }
+    .c-proj-name { font-size:clamp(28px,3.4vw,52px); font-weight:200; letter-spacing:-.03em; line-height:1.05; margin-bottom:28px; }
+    .c-meta { display:flex; flex-direction:column; gap:8px; font-size:9px; letter-spacing:.14em; color:rgba(255,255,255,.3); padding:18px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:28px; }
+    .c-desc { font-size:13px; color:rgba(255,255,255,.42); line-height:1.8; margin-bottom:0; }
+    .c-images { position:relative; height:100%; overflow:hidden; background:rgba(255,255,255,.02); }
+    .c-carousel { position:relative; width:100%; height:100%; }
+    .c-car-img { width:100%; height:100%; object-fit:cover; display:block; }
+    .c-car-img.contain { object-fit:contain; }
+    .c-car-arrow { position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.25); background:rgba(12,12,12,.45); backdrop-filter:blur(10px); color:#fff; font-size:16px; display:flex; align-items:center; justify-content:center; cursor:none; transition:background .25s, border-color .25s; z-index:5; }
+    .c-car-arrow:hover { background:rgba(12,12,12,.8); border-color:rgba(255,255,255,.6); }
+    .c-car-arrow.prev { left:24px; }
+    .c-car-arrow.next { right:24px; }
+    .c-car-count { position:absolute; bottom:24px; right:28px; font-size:10px; letter-spacing:.1em; color:rgba(255,255,255,.55); background:rgba(12,12,12,.5); backdrop-filter:blur(10px); padding:6px 12px; border:1px solid rgba(255,255,255,.15); font-variant-numeric:tabular-nums; z-index:5; }
+    .c-car-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+    .c-img-ph { font-size:9px; letter-spacing:.22em; color:rgba(255,255,255,.15); }
+    /* 대학원·학부 상세페이지용 콜라주(masonry) 이미지 갤러리 */
+    .c-gallery { width:100%; height:100%; overflow-y:auto; column-width:200px; column-gap:6px; padding:6px; }
+    .c-gallery img { width:100%; height:auto; display:block; margin-bottom:6px; break-inside:avoid; background:rgba(255,255,255,.03); }
+    /* 해외인턴 전용 콜라주 그리드: position:absolute로 height:100% 상속 문제 우회 */
+    .c-collage { position:absolute; inset:0; display:grid; gap:3px; overflow:hidden; }
+    .c-collage img { width:100%; height:100%; object-fit:cover; display:block; }
+    .c-collage-empty { background:rgba(255,255,255,.02); }
+    .c-extra { display:none; margin-bottom:52px; padding:28px 32px; border:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.018); }
+    .c-extra-label { font-size:8px; letter-spacing:.28em; color:rgba(255,255,255,.2); text-transform:uppercase; display:block; margin-bottom:14px; }
+    .c-extra-name { font-size:18px; font-weight:300; margin-bottom:8px; }
+    .c-extra-detail { font-size:11px; color:rgba(255,255,255,.35); letter-spacing:.06em; }
+    .c-projlist { display:none; margin-bottom:52px; }
+    .c-projlist-label { font-size:8px; letter-spacing:.28em; color:rgba(255,255,255,.2); text-transform:uppercase; display:block; margin-bottom:14px; }
+    .c-projlist-item { display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid rgba(255,255,255,.06); }
+    .c-projlist-name { font-size:11px; color:rgba(255,255,255,.55); letter-spacing:.02em; }
+    .c-projlist-year { font-size:11px; color:rgba(255,255,255,.22); font-variant-numeric:tabular-nums; flex-shrink:0; }
+
+    /* ── AI LAB (overlay page) ── */
+    .ailab-body { padding:72px 80px 120px; }
+    .ailab-header { display:grid; grid-template-columns:1fr 1.2fr; gap:80px; align-items:start; margin-bottom:80px; }
+    .ailab-h   { font-size:clamp(28px,4vw,52px); font-weight:300; line-height:1.18; }
+    .ailab-sub { font-size:10px; letter-spacing:.2em; color:rgba(255,255,255,.25); margin:14px 0 28px; }
+    .ailab-quote { font-size:13px; color:rgba(255,255,255,.38); line-height:1.9; border-left:1px solid rgba(255,255,255,.1); padding-left:24px; }
+    .ailab-qr { display:flex; align-items:center; gap:14px; margin-top:32px; padding-left:24px; }
+    .ailab-qr img { width:60px; height:60px; background:#fff; padding:5px; border-radius:3px; display:block; }
+    .ailab-qr span { font-size:9px; letter-spacing:.18em; color:rgba(255,255,255,.3); text-transform:uppercase; }
+    .tool-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(255,255,255,.05); }
+    .tool-card { background:var(--bg); padding:38px 32px; }
+    .tool-cat  { font-size:8px; letter-spacing:.26em; color:rgba(255,255,255,.18); text-transform:uppercase; margin-bottom:16px; }
+    .tool-name { font-size:15px; font-weight:400; margin-bottom:10px; line-height:1.4; }
+    .tool-desc { font-size:11px; color:rgba(255,255,255,.32); line-height:1.75; }
+    .ailab-gallery { display:grid; grid-template-columns:repeat(5,1fr); gap:3px; margin-top:64px; }
+    .ailab-gallery img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; background:rgba(255,255,255,.03); }
+
+    /* ── FOOTER ── */
+    footer { padding:72px 80px; border-top:1px solid var(--line); display:grid; grid-template-columns:2fr 1fr 1fr; gap:60px; align-items:start; }
+    .ft-name  { font-size:30px; font-weight:300; letter-spacing:.01em; margin-bottom:8px; }
+    .ft-title { font-size:10px; color:rgba(255,255,255,.3); letter-spacing:.12em; }
+    .ft-label { font-size:8px; letter-spacing:.28em; color:rgba(255,255,255,.18); text-transform:uppercase; margin-bottom:12px; margin-top:28px; }
+    .ft-label:first-child { margin-top:0; }
+    .ft-val { font-size:12px; color:rgba(255,255,255,.4); line-height:2; }
+    .ft-link { color:inherit; text-decoration:none; cursor:none; transition:color .3s; }
+    .ft-link:hover { color:var(--white); }
+    .ft-bottom { padding:20px 80px; border-top:1px solid rgba(255,255,255,.04); display:flex; justify-content:space-between; font-size:8px; letter-spacing:.16em; color:rgba(255,255,255,.13); }
+
+  /* ═══════════════════════════════════════
+     TABLET  (≤ 1024px)
+  ═══════════════════════════════════════ */
+  @media (max-width: 1024px) {
+    nav { padding: 22px 36px; }
+    .section-tag { padding: 0 36px; }
+    #work { padding: 100px 0 120px; }
+    .timeline { max-width: 680px; padding: 0 16px; }
+    .ailab-header { grid-template-columns: 1fr; gap: 48px; }
+    .tool-grid { grid-template-columns: repeat(2, 1fr); }
+    .ailab-body { padding: 100px 48px; }
+    footer { padding: 60px 48px; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .ft-bottom { padding: 18px 48px; }
+    .ov-bar { padding: 20px 48px; }
+    /* 태블릿 이하: 좌우 분할 대신 세로로 쌓고, 슬라이드 영역만 고정 높이 부여 */
+    #c-ov { overflow-y: auto; }
+    .c-body { display: block; padding: 56px 48px 100px; }
+    .c-info { border-right: none; padding: 0 0 40px; overflow-y: visible; }
+    .c-images { height: 56vh; }
+    .ailab-gallery { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* ═══════════════════════════════════════
+     MOBILE  (≤ 640px)
+  ═══════════════════════════════════════ */
+  @media (max-width: 640px) {
+    /* 커스텀 커서 숨김 */
+    #cur-dot, #cur-ring { display: none; }
+    body { cursor: auto; }
+    a, button, .tl-item.company, .tl-item.edu,
+    .tl-proj-item:not(.no-link) { cursor: pointer; }
+
+    /* NAV */
+    nav { padding: 16px 20px; }
+    .nav-logo { font-size: 10px; letter-spacing: .24em; }
+    .nav-menu { gap: 16px; }
+    .nav-menu a { font-size: 8px; letter-spacing: .14em; }
+
+    /* SECTION TAG */
+    .section-tag { padding: 0 20px; margin-bottom: 48px; font-size: 7px; }
+
+    /* WORK */
+    #work { padding: 72px 0 88px; }
+
+    /* TIMELINE — 단일 컬럼 */
+    .timeline { max-width: 100%; padding: 0; }
+    .tl-line-bg, .tl-line-glow { left: 28px; transform: none; }
+    .tl-line-glow::after { transform: none; left: -1px; }
+    .tl-item {
+      display: block;
+      position: relative;
+      padding-left: 52px;
+      margin-bottom: 36px;
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    .tl-item.visible { opacity: 1; transform: translateY(0); }
+    .tl-dot {
+      position: absolute;
+      left: 24px;
+      top: 8px;
+      justify-self: unset;
+    }
+    .tl-left, .tl-right {
+      text-align: left;
+      padding: 0 20px 0 0;
+    }
+    .tl-period { margin-bottom: 5px; }
+
+    /* 호버 없이 이름 opacity 유지 */
+    .tl-item.company:hover .tl-name,
+    .tl-item.edu:hover .tl-name { opacity: 1; }
+
+    /* 프로젝트 패널 — 항상 표시. 데스크톱 축 모드의 절대위치(옆 여백 branch)는
+       단일 컬럼 레이아웃에서 의미가 없으므로 일반 흐름으로 되돌린다. */
+    .tl-proj-panel {
+      opacity: 1 !important;
+      pointer-events: all !important;
+      transform: none !important;
+      position: static;
+      width: auto;
+      left: auto; right: auto;
+      margin-top: 14px;
+    }
+    .tl-toggle { display: none; }
+    .tl-proj-item { padding: 11px 0; gap: 10px; }
+    .tl-proj-pname { font-size: 11px; }
+    .tl-proj-ptag  { display: none; }
+    /* 탭 시 들여쓰기 */
+    .tl-proj-item:active:not(.no-link) { padding-left: 10px; }
+
+    /* OVERLAY 공통 */
+    .overlay { z-index: 960; }
+    .ov-bar { padding: 14px 20px; gap: 12px; }
+    .ov-crumb { font-size: 7px; letter-spacing: .2em; }
+    .ov-btn { font-size: 8px; letter-spacing: .16em; padding: 6px 0; }
+
+    /* C 오버레이 */
+    .c-body { padding: 32px 20px 80px; }
+    .c-info { padding-bottom: 24px; }
+    .c-proj-name { font-size: clamp(24px, 8vw, 40px); margin-bottom: 20px; }
+    .c-meta { gap: 6px; font-size: 8px; padding: 14px 0; margin-bottom: 20px; }
+    .c-desc { font-size: 12px; }
+    .c-images { height: 42vh; }
+    .c-gallery { column-width: 130px; }
+    .c-car-arrow { width: 36px; height: 36px; font-size: 14px; }
+    .c-car-arrow.prev { left: 12px; }
+    .c-car-arrow.next { right: 12px; }
+    .c-extra { padding: 18px 16px; margin-top: 20px; margin-bottom: 0; }
+    .c-extra-name { font-size: 14px; }
+    .c-projlist { margin-top: 20px; margin-bottom: 0; }
+
+    /* AI LAB */
+    .ailab-body { padding: 72px 20px; }
+    .ailab-header { grid-template-columns: 1fr; gap: 36px; margin-bottom: 48px; }
+    .ailab-h { font-size: clamp(22px, 6vw, 36px); }
+    .tool-grid { grid-template-columns: 1fr; }
+    .tool-card { padding: 28px 22px; }
+    .ailab-gallery { grid-template-columns: repeat(2, 1fr); margin-top: 40px; }
+
+    /* FOOTER */
+    footer { padding: 48px 20px; grid-template-columns: 1fr; gap: 28px; }
+    .ft-name { font-size: 22px; }
+    .ft-bottom { padding: 14px 20px; flex-direction: column; gap: 6px; }
+  }
+  </style>
+</head>
+<body>
+
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#cover" class="nav-logo">CH LEE</a>
+  <ul class="nav-menu">
+    <li><a href="#work">WORK</a></li>
+    <li><a href="#" class="nav-ailab">AI LAB</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════ COVER ══════════════ -->
+<section id="cover">
+  <canvas id="coverCanvas"></canvas>
+  <span class="cv-label">Architecture Portfolio</span>
+  <div class="cover-scroll">
+    <div class="scroll-bar"></div>
+    <span>SCROLL</span>
+  </div>
+</section>
+
+<!-- ══════════════ WORK / TIMELINE ══════════════ -->
+<section id="work">
+  <div class="section-tag">Career History — 2004 to Present</div>
+  <div class="timeline">
+    <div class="tl-line-bg"></div>
+    <div class="tl-line-glow"></div>
+    <div class="tl-ticks" id="tl-ticks"></div>
+
+    <div class="tl-item company current" data-co="yegawon2" data-start="2025-10">
+      <div class="tl-left">
+        <div class="tl-period">2025.10 — Present</div>
+        <div class="tl-name">YEGAONE Architects</div>
+        <div class="tl-name-kr">예가원건축사사무소</div>
+        <div class="tl-sub">설계부 차장</div>
+      </div>
+      <div class="tl-dot"></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item company" data-co="editcollective" data-start="2024-02">
+      <div class="tl-left"></div>
+      <div class="tl-dot"></div>
+      <div class="tl-right">
+        <div class="tl-period">2024.02 — 2025.01</div>
+        <div class="tl-name">EDIT COLLECTIVE</div>
+        <div class="tl-name-kr">에디트콜렉티브</div>
+        <div class="tl-sub">Flexity Prime 기획설계</div>
+      </div>
+    </div>
+
+    <div class="tl-item company" data-co="jda" data-start="2022-02">
+      <div class="tl-left">
+        <div class="tl-period">2022.02 — 2023.11</div>
+        <div class="tl-name">JNDA Architects</div>
+        <div class="tl-name-kr">제이앤디에이건축사사무소</div>
+        <div class="tl-sub">부장</div>
+      </div>
+      <div class="tl-dot"></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item company" data-co="yegawon1" data-start="2020-04">
+      <div class="tl-left"></div>
+      <div class="tl-dot"></div>
+      <div class="tl-right">
+        <div class="tl-period">2020.04 — 2021.12</div>
+        <div class="tl-name">YEGAONE Architects</div>
+        <div class="tl-name-kr">예가원건축사사무소</div>
+        <div class="tl-sub">설계부 과장</div>
+      </div>
+    </div>
+
+    <div class="tl-item company" data-co="itm" data-start="2018-06">
+      <div class="tl-left">
+        <div class="tl-period">2018.06 — 2020.04</div>
+        <div class="tl-name">ITM Corporation Architects</div>
+        <div class="tl-name-kr">아이티엠코퍼레이션</div>
+        <div class="tl-sub">설계2팀 과장</div>
+      </div>
+      <div class="tl-dot"></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item company" data-co="heelim" data-start="2016-03">
+      <div class="tl-left"></div>
+      <div class="tl-dot"></div>
+      <div class="tl-right">
+        <div class="tl-period">2016.03 — 2018.03</div>
+        <div class="tl-name">HEERIM Architects &amp; Planners</div>
+        <div class="tl-name-kr">희림종합건축사사무소</div>
+        <div class="tl-sub">주거설계1본부 팀장</div>
+      </div>
+    </div>
+
+    <div class="tl-item edu" data-edu="gdl" data-start="2013-02">
+      <div class="tl-left">
+        <div class="tl-period">2013.02 — 2016.03</div>
+        <div class="tl-name">GDL Architects</div>
+        <div class="tl-name-kr">지디엘건축사사무소</div>
+        <div class="tl-sub">대리</div>
+      </div>
+      <div class="tl-dot"></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item edu" data-edu="intern" data-start="2011-03">
+      <div class="tl-left"></div>
+      <div class="tl-dot"></div>
+      <div class="tl-right">
+        <div class="tl-period">2011.03 — 2011.08</div>
+        <div class="tl-name">Overseas Internship</div>
+        <div class="tl-sub">해외 인턴</div>
+      </div>
+    </div>
+
+    <div class="tl-item edu" data-edu="korea" data-start="2010-03">
+      <div class="tl-left">
+        <div class="tl-period">2010.03 — 2012.08</div>
+        <div class="tl-name">Graduate School</div>
+        <div class="tl-sub">대학원</div>
+      </div>
+      <div class="tl-dot"></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item edu" data-edu="daejin" data-start="2004-03">
+      <div class="tl-left"></div>
+      <div class="tl-dot"></div>
+      <div class="tl-right">
+        <div class="tl-period">2004.03 — 2010.02</div>
+        <div class="tl-name">Undergraduate</div>
+        <div class="tl-sub">학부</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ C OVERLAY ══════════════ -->
+<div class="overlay" id="c-ov">
+  <div class="ov-bar">
+    <span class="ov-crumb" id="c-crumb"></span>
+    <div class="ov-nav">
+      <a href="#cover" class="ov-btn" id="c-home">↑ HOME</a>
+      <div class="ov-sep"></div>
+      <button class="ov-btn" id="c-close">← BACK</button>
+    </div>
+  </div>
+  <div class="c-body">
+    <div class="c-info">
+      <h1 class="c-proj-name" id="c-name"></h1>
+      <div class="c-meta"     id="c-meta"></div>
+      <p  class="c-desc"      id="c-desc"></p>
+      <div class="c-extra"    id="c-extra"></div>
+      <div class="c-projlist" id="c-projlist"></div>
+    </div>
+    <div class="c-images"   id="c-images"></div>
+  </div>
+</div>
+
+<!-- ══════════════ AI LAB OVERLAY ══════════════ -->
+<div class="overlay" id="ailab-ov">
+  <div class="ov-bar">
+    <span class="ov-crumb">AI LAB</span>
+    <div class="ov-nav">
+      <a href="#cover" class="ov-btn" id="ailab-home">↑ HOME</a>
+      <div class="ov-sep"></div>
+      <button class="ov-btn" id="ailab-close">← CLOSE</button>
+    </div>
+  </div>
+  <div class="ailab-body">
+    <div class="section-tag">AI — Automation Lab</div>
+    <div class="ailab-header">
+      <div>
+        <h2 class="ailab-h">건축 자동화<br>알고리즘 LAB</h2>
+        <p class="ailab-sub">with ChatGPT &nbsp;·&nbsp; Gemini &nbsp;·&nbsp; Claude</p>
+        <p class="ailab-quote">
+          시간낭비, 불편함에, 생각나서 만드는<br>
+          라이노·그래스호퍼 파이썬 기반 알고리즘 개발<br><br>
+          AI 기술을 활용해 반복 업무를 자동화하고,<br>
+          설계 본연에 집중할 수 있는 환경을 만들어 가고 있습니다.
+        </p>
+        <div class="ailab-qr">
+          <img src="images/ailab/qr.png" alt="QR 코드">
+          <span>Scan for more</span>
+        </div>
+      </div>
+      <div class="tool-grid">
+        <div class="tool-card"><div class="tool-cat">01 — Modeling & Design</div><div class="tool-name">아파트 자동 모델링</div><div class="tool-desc">Rhino·GH 기반 자동 매스 생성 자동화</div></div>
+        <div class="tool-card"><div class="tool-cat">02 — Modeling & Design</div><div class="tool-name">지하층 산정 자동화 툴</div><div class="tool-desc">지하층 산정 가중평균 산정 자동화</div></div>
+        <div class="tool-card"><div class="tool-cat">03 — Modeling & Design</div><div class="tool-name">대지구적도 생성 툴</div><div class="tool-desc">대지 구적도 산정 자동화</div></div>
+        <div class="tool-card"><div class="tool-cat">04 — Tools</div><div class="tool-name">BFCCC 사업성 계산기</div><div class="tool-desc">재건축 재개발 사업성보정계수 계산기</div></div>
+        <div class="tool-card"><div class="tool-cat">05 — Tools</div><div class="tool-name">인허가일정표 작성 툴</div><div class="tool-desc">수정이 편리한 인허가일정표 작성 툴</div></div>
+        <div class="tool-card"><div class="tool-cat">06 — Cost Checker</div><div class="tool-name">CRCC 주거시설 공사비 검토</div><div class="tool-desc">주거 개략 공사비 및 사업성분석 툴</div></div>
+        <div class="tool-card"><div class="tool-cat">07 — Cost Checker</div><div class="tool-name">CCC 공사비 검토 툴</div><div class="tool-desc">비주거 개략 공사비 및 사업성분석 툴</div></div>
+        <div class="tool-card"><div class="tool-cat">08 — Tools</div><div class="tool-name">건축사사무소 업무 효율 툴</div><div class="tool-desc">프로젝트 메일 관리 및 인수인계 작성 툴</div></div>
+        <div class="tool-card"><div class="tool-cat">09 — Etc · Fun</div><div class="tool-name">건축시험 맞춤 학습 플래너</div><div class="tool-desc">커리큘럼 기반 개인 맞춤형 학습 계획 생성</div></div>
+      </div>
+    </div>
+    <div class="ailab-gallery">
+      <img src="images/ailab/01.png" alt="AI Lab 작업 화면 01">
+      <img src="images/ailab/02.png" alt="AI Lab 작업 화면 02">
+      <img src="images/ailab/03.png" alt="AI Lab 작업 화면 03">
+      <img src="images/ailab/04.png" alt="AI Lab 작업 화면 04">
+      <img src="images/ailab/05.png" alt="AI Lab 작업 화면 05">
+      <img src="images/ailab/06.png" alt="AI Lab 작업 화면 06">
+      <img src="images/ailab/07.png" alt="AI Lab 작업 화면 07">
+      <img src="images/ailab/08.png" alt="AI Lab 작업 화면 08">
+      <img src="images/ailab/09.png" alt="AI Lab 작업 화면 09">
+      <img src="images/ailab/010.png" alt="AI Lab 작업 화면 10">
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+  <div>
+    <div class="ft-name">이찬희 &nbsp;/&nbsp; Lee Chan Hee</div>
+    <div class="ft-title">Architectural Designer</div>
+  </div>
+  <div>
+    <div class="ft-label">Discipline</div>
+    <div class="ft-val">Conceptual & Feasibility Design<br>Residential Design<br>Hospitality Architecture<br>AI Application & Integration</div>
+  </div>
+  <div>
+    <div class="ft-label">Contact</div>
+    <div class="ft-val"><a href="tel:010-2949-9422" class="ft-link">010-2949-9422</a><br><a href="mailto:chanhee__lee@naver.com" class="ft-link">chanhee__lee@naver.com</a></div>
+    <div class="ft-label">Experience</div>
+    <div class="ft-val">12년+</div>
+  </div>
+</footer>
+<div class="ft-bottom">
+  <span>CH LEE — ARCHITECTURE PORTFOLIO</span>
+  <span id="ft-year">© 2025</span>
+</div>
+
+<script>
+/* 리사이즈 중 무거운 재계산(캔버스 마스크/타임라인 눈금)이 매 프레임 반복되지 않도록 디바운스 */
+function debounce(fn, wait = 150) {
+  let timer;
+  return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), wait); };
+}
+
+/* ══════════════════════════════════════════
+   CURSOR
+══════════════════════════════════════════ */
+const curDot  = document.getElementById('cur-dot');
+const curRing = document.getElementById('cur-ring');
+let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  curDot.style.left = mx+'px'; curDot.style.top = my+'px';
+});
+(function animCursor() {
+  rx += (mx-rx)*.1; ry += (my-ry)*.1;
+  curRing.style.left = rx+'px'; curRing.style.top = ry+'px';
+  requestAnimationFrame(animCursor);
+})();
+function addHover(sel) {
+  document.querySelectorAll(sel).forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hov'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hov'));
+  });
+}
+addHover('a, button, .tl-item.company, .tl-item.edu');
+
+/* ══════════════════════════════════════════
+   COVER — BARCODE CANVAS
+   조절 가능한 변수들
+══════════════════════════════════════════ */
+const CFG = {
+  CONDENSE      : 0.62,  // 텍스트 가로 압축 비율
+  STRIPE_SPACING: 5,     // 줄 간격 (px)
+  THIN_W        : 0.9,   // 배경 줄 두께 (px)
+  THICK_W       : 4.0,   // 글자 줄 두께 (px)
+  ALPHA_BG      : 0.25,  // 배경 줄 불투명도
+  ALPHA_TEXT    : 1.0,   // 글자 줄 불투명도
+  STEP          : 4,     // 세그먼트 높이 (px) — 작을수록 글자 경계 정밀
+  BASE_AMP      : 0.8,   // 기본 sin 진폭 (px)
+  HOVER_MUL     : 9,     // hover 시 진폭 배수
+  EASE          : 0.08   // hover 전환 easing 속도
+};
+
+const cvs  = document.getElementById('coverCanvas');
+const cctx = cvs.getContext('2d');
+let W = 0, H = 0, mask, columns = [];
+
+function buildMask() {
+  const off  = document.createElement('canvas');
+  off.width  = W; off.height = H;
+  const octx = off.getContext('2d');
+
+  octx.fillStyle = '#000';
+  octx.fillRect(0, 0, W, H);
+  octx.fillStyle = '#fff';
+
+  // CHLEE 폰트 크기 자동 계산: 화면 너비 65% 채움, 높이 40% 이하 유지
+  const testSz  = 300;
+  octx.font     = `700 ${testSz}px "Helvetica Neue", Arial, sans-serif`;
+  const cratio  = octx.measureText('CHLEE').width / testSz;
+  const chleeSize = Math.min((W * 0.65) / (cratio * CFG.CONDENSE), H * 0.40);
+  const portfSize = chleeSize * 0.78;
+
+  function drawCond(text, cy, size) {
+    octx.save();
+    octx.translate(W / 2, cy);
+    octx.scale(CFG.CONDENSE, 1);
+    octx.font         = `700 ${Math.round(size)}px "Helvetica Neue", Arial, sans-serif`;
+    octx.textAlign    = 'center';
+    octx.textBaseline = 'middle';
+    octx.fillText(text, 0, 0);
+    octx.restore();
+  }
+
+  // 화면 크기에 관계없이 수직 중앙 정렬
+  const gapPx  = chleeSize * 0.12;
+  const halfC  = chleeSize * 0.36;   // textBaseline='middle' 기준 반높이
+  const halfP  = portfSize * 0.36;
+  const blkH   = halfC * 2 + gapPx + halfP * 2;
+  const startY = (H - blkH) / 2;
+  const chleeY = startY + halfC;
+  const portfY = startY + halfC * 2 + gapPx + halfP;
+
+  drawCond('CHLEE',     chleeY, chleeSize);
+  drawCond('PORTFOLIO', portfY, portfSize);
+
+  mask = octx.getImageData(0, 0, W, H).data;
+}
+
+function isOn(x, y) {
+  x = Math.max(0, Math.min(W - 1, x | 0));
+  y = Math.max(0, Math.min(H - 1, y | 0));
+  return mask[(y * W + x) * 4] > 128;
+}
+
+/* 컬럼별로 on/off 연속 구간을 미리 합쳐서 저장 → 프레임당 fillRect 호출 수를 대폭 축소 */
+function buildColumns() {
+  columns = [];
+  for (let x = CFG.STRIPE_SPACING / 2; x < W; x += CFG.STRIPE_SPACING) {
+    const runs = [];
+    let curOn = isOn(x, 0), runStart = 0, count = 0;
+    for (let y = 0; y < H; y += CFG.STEP) {
+      const on = isOn(x, y);
+      if (on !== curOn) {
+        runs.push({ y: runStart, h: count * CFG.STEP + 0.6, on: curOn });
+        curOn = on; runStart = y; count = 0;
+      }
+      count++;
+    }
+    runs.push({ y: runStart, h: count * CFG.STEP + 0.6, on: curOn });
+    columns.push({ x, runs });
+  }
+}
+
+function resize() {
+  W = cvs.width  = cvs.offsetWidth;
+  H = cvs.height = cvs.offsetHeight;
+  buildMask();
+  buildColumns();
+}
+resize();
+document.fonts.ready.then(resize);
+window.addEventListener('resize', debounce(resize));
+
+/* 커버 섹션이 화면 밖으로 스크롤되면 캔버스 드로우 루프를 멈춰 CPU 낭비 방지 */
+let coverVisible = true;
+new IntersectionObserver(([entry]) => { coverVisible = entry.isIntersecting; }, { threshold: 0 })
+  .observe(document.getElementById('cover'));
+
+let t = 0, intensity = 1, tgtIntensity = 1;
+const ST = `rgba(255,255,255,${CFG.ALPHA_TEXT})`;
+const SB = `rgba(255,255,255,${CFG.ALPHA_BG})`;
+
+cvs.addEventListener('mouseenter',  () => { tgtIntensity = CFG.HOVER_MUL; });
+cvs.addEventListener('mouseleave',  () => { tgtIntensity = 1; });
+cvs.addEventListener('touchstart',  () => { tgtIntensity = CFG.HOVER_MUL; }, { passive: true });
+cvs.addEventListener('touchend',    () => { tgtIntensity = 1; });
+cvs.addEventListener('touchcancel', () => { tgtIntensity = 1; });
+
+(function drawCover() {
+  if (!coverVisible) { requestAnimationFrame(drawCover); return; }
+
+  cctx.fillStyle = '#0c0c0c';
+  cctx.fillRect(0, 0, W, H);
+
+  intensity += (tgtIntensity - intensity) * CFG.EASE;
+  const amp   = CFG.BASE_AMP * intensity;
+  const speed = 0.018 + (intensity - 1) * 0.005;
+
+  let prevStyle = null;
+  for (const col of columns) {
+    const wobble = Math.sin(col.x * 0.04 + t) * amp;
+    for (const r of col.runs) {
+      const sty = r.on ? ST : SB;
+      if (sty !== prevStyle) { cctx.fillStyle = prevStyle = sty; }
+      cctx.fillRect(
+        col.x - (r.on ? CFG.THICK_W : CFG.THIN_W) / 2 + wobble,
+        r.y,
+        r.on ? CFG.THICK_W : CFG.THIN_W,
+        r.h
+      );
+    }
+  }
+
+  t += speed;
+  requestAnimationFrame(drawCover);
+})();
+
+/* ══════════════════════════════════════════
+   DATA
+══════════════════════════════════════════ */
+const CO = {
+  yegawon2:     { name:'예가원건축사사무소', nameEn:'YEGAONE Architects',       period:'2025.10 — Present', role:'설계부 차장',
+    projects:[
+      { id:'sungsan', name:'마포 성산동 가로주택정비사업 (모아주택)', tag:'차장 · PM', year:'2025', link:true }
+    ] },
+  editcollective:{ name:'에디트콜렉티브', nameEn:'EDIT COLLECTIVE',             period:'2024.02 — 2025.01', role:'',
+    projects:[
+      { id:null, name:'서울특별시 종로구 효제동 98일원 업무시설 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 마포구 노고산동 도시형생활주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:'namchang', name:'서울특별시 중구 남창동 도시형생활주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:true },
+      { id:null, name:'서울특별시 종로구 관훈동 노인복지주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 동대문구 용두동 임대형기숙사 복합시설', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:'euljiro', name:'서울특별시 중구 을지로5가 서울형 공유주택', tag:'건축가, 기획설계', year:'2024', link:true },
+      { id:null, name:'서울특별시 마포구 대흥동 152-1, 153-1 업무상업복합시설 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 마포구 합정동 373-12외 3필지 임대형기숙사 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 송파구 삼전동 38-27 임대형기숙사 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 동대문구 용두동 223-50외 임대형기숙사 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 성동구 도선동 업무상업복합시설(오피스텔) 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 강동구 성내동 48-1 외 5필지 업무상업복합시설 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 동대문구 장안동 351-1 외 1필지 도시형생활주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 도봉구 창동 334 임대형기숙사 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 강동구 성내동 48-1 외 5필지 오피스텔 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 광진구 자양동 9-4 임대형기숙사 복합시설 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 동대문구 용두동 255-53 오피스텔(업무시설) 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 마포구 신촌지역(마포) 3-3지구 도시정비형 재개발구역 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 중구 남대문로5가 17-1 외15필지 업무상업복합시설 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 중랑구 신내동 641 역세권활성화 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 동대문구 신설동 103-19 임대형기숙사 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 영등포구 국제금융로 52, 56 업무상업복합시설 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'서울특별시 금천구 독산동 293-4 매입임대주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'부산광역시 해운대구 우동 891-3 업무상업복합시설 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'부산광역시 중구 동상동 436-4 공동주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'울산광역시 남구 무거동 1528-2 주상복합 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'경기도 성남시 금토공공주택지구 자족6-1 업무상업복합시설 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'경기도 성남시 금토공공주택지구 자족6-2.3 업무상업복합시설 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'경기도 수원시 팔달구 매산로3가 16-16 요양병원 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'경기도 수원시 영통동 999-2 오피스텔 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'경기도 광주시 경안동 68-3외 4필지 공동주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'경기도 남양주 황숙 B-14BL 공동주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'경기도 의왕시 포일동 511 노인의료복지시설 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'경기도 이천시 부발읍 신하리 646외 7필지 주자전용건축물 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'충청남도 천안 BIT일반산업단지 물류센터 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:'gunsan', name:'전라북도 군산시 구암동 공동주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:true },
+      { id:null, name:'전라남도 여수시 문수동 111-2 공동주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'전라남도 목포시 호남동 129 주상복합 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'경상북도 구미시 봉곡동 주상복합 개발사업', tag:'건축가, 기획설계', year:'2024', link:false },
+      { id:null, name:'경상남도 양산시 삼포동 827 연립주택 개발사업', tag:'건축가, 기획설계', year:'2024', link:false }
+    ] },
+  jda:          { name:'제이앤디에이건축사사무소', nameEn:'JNDA Architects',     period:'2022.02 — 2023.11', role:'부장',
+    projects:[
+      { id:'gangneung', name:'강릉 프리시에 콘도미니엄 신축공사', tag:'부장 · SPM', year:'2023', link:true },
+      { id:'yeongjong',  name:'영종도 복합리조트 개발 계획안',     tag:'부장 · SPM', year:'2023', link:true },
+      { id:null, name:'힐튼 여수 리조트 마스터 플랜',              tag:'부장 · PM',  year:'2022', link:false },
+      { id:null, name:'여수 디오션 CC 클럽하우스 신축공사',        tag:'부장 · PM',  year:'2022', link:false },
+      { id:null, name:'필리핀 클락 팜팡가 3성급 호텔 신축공사',    tag:'부장 · SPM', year:'2022', link:false }
+    ] },
+  yegawon1:     { name:'예가원건축사사무소', nameEn:'YEGAONE Architects',      period:'2020.04 — 2021.12', role:'설계부 과장',
+    projects:[
+      { id:'guri', name:'구리시 수택 지역주택조합아파트', tag:'과장 · PM', year:'2021', link:true },
+      { id:null, name:'서울특별시 봉천동 역세권 활성화 사업 계획안', tag:'과장 · PM', year:'2021', link:false },
+      { id:null, name:'경상북도 경산시 강변 사정동 지역주택조합', tag:'과장 · PM', year:'2020', link:false },
+      { id:'sangsu', name:'서울특별시 마포구 상수역 지역주택조합', tag:'과장 · PM', year:'2020', link:true },
+      { id:'dongjak', name:'동작센트럴자이(상도스타리움 지역주택조합)', tag:'과장 · SPM', year:'2020', link:true },
+      { id:null, name:'충청남도 서산시 동문 임대아파트 신축공사 계획안', tag:'과장 · PM', year:'2020', link:false }
+    ] },
+  itm:          { name:'아이티엠코퍼레이션', nameEn:'ITM Corporation Architects', period:'2018.06 — 2020.04', role:'설계2팀 과장',
+    projects:[
+      { id:'bukwang', name:'서울특별시 은평구 불광동 지역주택조합 공동주택', tag:'과장 · PM', year:'2019', link:true },
+      { id:'hwaseong', name:'화성 송산그린시티 공동주택 (EAA4/EAB9/EAA5/EAA12)', tag:'과장 · SPM', year:'2019', link:true },
+      { id:'andong', name:'안동시 성곡동 단지형 연립주택', tag:'과장 · SPM', year:'2018', link:true },
+      { id:'hwaseong2', name:'화성 태안3지구 B1BL 공동주택', tag:'과장 · SPM', year:'2018', link:true }
+    ] },
+  heelim:       { name:'희림종합건축사사무소', nameEn:'HEERIM Architects & Planners', period:'2016.03 — 2018.03', role:'주거설계1본부 팀장',
+    projects:[
+      { id:'hanam', name:'하남 지역 현안 2지구 A1BL 공동주택 신축공사 TK', tag:'팀장', year:'2018', link:true },
+      { id:'songdo', name:'송도 6,8공구 개발사업 시행자 공모 PF', tag:'팀장', year:'2017', link:true },
+      { id:null, name:'강원도 고성군 원암리 공동주택 신축공사 개발 계획안', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'경주 천북지구 개발사업 계획안', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'봉대산공원 민간공원 조성특례사업 마스터플랜', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'김해 내동 대한항공 아파트 지명 제안서 설계공모', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'BAUR Kazakhstan Residential Complex Project', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'잠실 우성아파트 재건축정비사업 설계공모', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'서울특별시 용산구 한남동 726-111 공동주택 계획안', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'송도 랜드마크시티 R2BL 계획안', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'Mandalay Myanmar Master Plan', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'경서3구역 1단지 오피스텔 신축공사 지명현상', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'고덕 강일 공공주택지구 2단지 제로 에너지 아파트 기본설계 현상공모', tag:'팀장', year:'2017', link:false },
+      { id:null, name:'청주 사직 4구역 도시환경 정비사업 계획안', tag:'부팀장', year:'2016', link:false },
+      { id:null, name:'서울특별시 종로구 수송동 저층 상업시설 개발 계획안', tag:'부팀장', year:'2016', link:false },
+      { id:null, name:'김포 사우지구 복합시설 개발 계획안', tag:'부팀장', year:'2016', link:false },
+      { id:null, name:'명지국제도시 복합용지 2,3BL 복합개발사업 개발 계획안', tag:'부팀장', year:'2016', link:false },
+      { id:null, name:'이천 마장지구 B3BL 공동주택 신축공사 개발 계획안', tag:'부팀장', year:'2016', link:false },
+      { id:null, name:'창원 중동지구 중앙공원 보행로 계획안', tag:'부팀장', year:'2016', link:false },
+      { id:null, name:'서울특별시 강남구 논현동40 주거복합 계획안', tag:'부팀장', year:'2016', link:false },
+      { id:'eunma', name:'대치은마아파트 주택재건축정비사업 현상공모', tag:'부팀장', year:'2016', link:true },
+      { id:'haengjeong', name:'행정중심복합도시 1-5생활권 H9 BL 현상공모', tag:'부팀장', year:'2016', link:true },
+      { id:null, name:'행정중심복합도시 2-4생활권 주상복합용지 현상공모', tag:'부팀장', year:'2016', link:false },
+      { id:null, name:'성남판교 중상7-1BL 주17BL 업무복합시설 개발 계획안', tag:'부팀장', year:'2016', link:false }
+    ] }
+};
+
+const PROJ = {
+  /* ── 이미지 추가 방법 ──────────────────────────────────────────
+     images 배열에 경로를 추가하면 C 페이지에 자동으로 표시됩니다.
+     예: images: ['images/프로젝트명/01.jpg', 'images/프로젝트명/02.jpg']
+     첫 번째 이미지는 풀 와이드, 나머지는 2열 그리드로 배치됩니다.
+     이미지 없으면 빈 배열 [] 유지 → 플레이스홀더 표시.
+  ──────────────────────────────────────────────────────────── */
+  sungsan:    { name:'마포 성산동 가로주택정비사업 (모아주택)',       co:'YEGAONE Architects',   period:'2025',        type:'가로주택정비사업 (모아주택)',
+    desc:'마포구 성산동 가로주택정비사업(모아주택) 담당.',
+    images: ['images/yegawon2/sungsan/01.jpg','images/yegawon2/sungsan/02.jpg','images/yegawon2/sungsan/03.jpg','images/yegawon2/sungsan/04.jpg','images/yegawon2/sungsan/05.jpg'] },
+
+  flexity:    { name:'Flexity Prime',                         co:'EDIT COLLECTIVE',      period:'2024',        type:'AI 기획설계 서비스',
+    desc:'플렉시티 프라임 건축가 맞춤 기획설계 55건 수행. KT estate, SK D&D 등 디벨로퍼 대상 AI 알고리즘 기반 빠른 기획설계 서비스.',
+    images: ['images/editcollective/flexity/01.png'] },
+
+  gunsan:     { name:'전라북도 군산시 구암동 공동주택 개발사업', co:'EDIT COLLECTIVE',     period:'2024',        type:'건축가, 기획설계',
+    desc:'플렉시티 프라임 AI 기반 기획설계 서비스로 수행한 군산시 구암동 공동주택 개발사업.',
+    images: ['images/editcollective/gunsan/01.jpg','images/editcollective/gunsan/02.jpg','images/editcollective/gunsan/03.jpg','images/editcollective/gunsan/04.jpg','images/editcollective/gunsan/05.jpg','images/editcollective/gunsan/06.jpg','images/editcollective/gunsan/07.jpg','images/editcollective/gunsan/08.jpg','images/editcollective/gunsan/09.jpg','images/editcollective/gunsan/10.jpg','images/editcollective/gunsan/11.jpg','images/editcollective/gunsan/12.jpg','images/editcollective/gunsan/13.jpg','images/editcollective/gunsan/14.jpg','images/editcollective/gunsan/15.jpg','images/editcollective/gunsan/16.jpg','images/editcollective/gunsan/17.jpg','images/editcollective/gunsan/18.jpg','images/editcollective/gunsan/19.jpg','images/editcollective/gunsan/20.jpg','images/editcollective/gunsan/21.jpg','images/editcollective/gunsan/22.jpg','images/editcollective/gunsan/23.jpg','images/editcollective/gunsan/24.jpg','images/editcollective/gunsan/25.jpg'] },
+
+  namchang:   { name:'서울특별시 중구 남창동 도시형생활주택 개발사업', co:'EDIT COLLECTIVE', period:'2024',        type:'건축가, 기획설계',
+    desc:'플렉시티 프라임 AI 기반 기획설계 서비스로 수행한 중구 남창동 도시형생활주택 개발사업.',
+    images: ['images/editcollective/namchang/01.jpg','images/editcollective/namchang/02.jpg','images/editcollective/namchang/03.jpg','images/editcollective/namchang/04.jpg','images/editcollective/namchang/05.jpg','images/editcollective/namchang/06.jpg','images/editcollective/namchang/07.jpg','images/editcollective/namchang/08.jpg','images/editcollective/namchang/09.jpg','images/editcollective/namchang/10.jpg','images/editcollective/namchang/11.jpg','images/editcollective/namchang/12.jpg','images/editcollective/namchang/13.jpg','images/editcollective/namchang/14.jpg','images/editcollective/namchang/15.jpg','images/editcollective/namchang/16.jpg','images/editcollective/namchang/17.jpg','images/editcollective/namchang/18.jpg','images/editcollective/namchang/19.jpg','images/editcollective/namchang/20.jpg','images/editcollective/namchang/21.jpg','images/editcollective/namchang/22.jpg','images/editcollective/namchang/23.jpg'] },
+
+  euljiro:    { name:'서울특별시 중구 을지로5가 서울형 공유주택', co:'EDIT COLLECTIVE',      period:'2024',        type:'건축가, 기획설계',
+    desc:'플렉시티 프라임 AI 기반 기획설계 서비스로 수행한 중구 을지로5가 서울형 공유주택.',
+    images: ['images/editcollective/euljiro/01.jpg','images/editcollective/euljiro/02.jpg','images/editcollective/euljiro/03.jpg','images/editcollective/euljiro/04.jpg','images/editcollective/euljiro/05.jpg','images/editcollective/euljiro/06.jpg','images/editcollective/euljiro/07.jpg','images/editcollective/euljiro/08.jpg','images/editcollective/euljiro/09.jpg','images/editcollective/euljiro/10.jpg','images/editcollective/euljiro/11.jpg','images/editcollective/euljiro/12.jpg'] },
+
+  gangneung:  { name:'강릉 프리시에 콘도미니엄 신축공사', co:'JNDA Architects',      period:'2022 — 2023', type:'호스피탈리티 / 건축심의·허가',
+    desc:'강릉 해양형 프리미엄 리조트 신축공사 건축심의, 허가도서 작성 및 관리.',
+    images: ['images/jda/gangneung/01.jpg','images/jda/gangneung/02.jpg','images/jda/gangneung/03.jpg','images/jda/gangneung/04.jpg','images/jda/gangneung/05.jpg','images/jda/gangneung/06.jpg','images/jda/gangneung/07.jpg'] },
+
+  yeongjong:  { name:'영종도 복합리조트 개발 계획안',                     co:'JNDA Architects',      period:'2022 — 2023', type:'호스피탈리티 / 기획설계',
+    desc:'영종도 복합리조트 신축공사 기획설계, 발주처 보고서 작성 및 협의.',
+    images: ['images/jda/yeongjong/01.jpg','images/jda/yeongjong/02.jpg','images/jda/yeongjong/03.jpg','images/jda/yeongjong/04.jpg','images/jda/yeongjong/05.jpg','images/jda/yeongjong/06.jpg','images/jda/yeongjong/07.jpg','images/jda/yeongjong/08.jpg'] },
+
+  guri:       { name:'구리시 수택 지역주택조합아파트',               co:'YEGAONE Architects',   period:'2020 — 2021', type:'공동주택 / 실시설계',
+    desc:'구리 수택 지역주택조합 아파트 신축공사 실시설계.',
+    images: ['images/yegawon1/guri/01.jpg','images/yegawon1/guri/02.jpg'] },
+
+  sangsu:     { name:'서울특별시 마포구 상수역 지역주택조합',           co:'YEGAONE Architects',   period:'2020 — 2021', type:'공동주택 / 기본설계',
+    desc:'마포구 상수역 지역주택조합 아파트 신축공사 기본설계.',
+    images: ['images/yegawon1/sangsu/01.jpg'] },
+
+  dongjak:    { name:'동작센트럴자이(상도스타리움 지역주택조합)',                       co:'YEGAONE Architects',   period:'2020 — 2021', type:'공동주택 / 실시설계',
+    desc:'상도 스타리움 지역주택조합 아파트 신축공사 실시설계.',
+    images: ['images/yegawon1/dongjak/01.jpg','images/yegawon1/dongjak/02.png'] },
+
+  bukwang:    { name:'서울특별시 은평구 불광동 지역주택조합 공동주택',                   co:'ITM Corporation Architects',      period:'2018 — 2020', type:'공동주택 / 현상설계',
+    desc:'불광동지역주택조합 아파트 신축공사.',
+    images: ['images/itm/bukwang/02.jpg'] },
+
+  hwaseong:   { name:'화성 송산그린시티 공동주택 (EAA4/EAB9/EAA5/EAA12)',             co:'ITM Corporation Architects',      period:'2018 — 2020', type:'공동주택 / 실시설계',
+    desc:'화성 송산그린시티 EAB9BL 공동주택 신축공사 실시설계.',
+    images: ['images/itm/hwaseong/01.jpg','images/itm/hwaseong/02.jpg'] },
+
+  andong:     { name:'안동시 성곡동 단지형 연립주택',           co:'ITM Corporation Architects',      period:'2018 — 2020', type:'공동주택 / 실시설계',
+    desc:'안동시 성곡동 테라스하우스 신축공사 실시설계.',
+    images: ['images/itm/andong/01.jpg','images/itm/andong/02.jpg'] },
+
+  hwaseong2:  { name:'화성 태안3지구 B1BL 공동주택',                  co:'ITM Corporation Architects',      period:'2018 — 2020', type:'공동주택 / 기본·실시설계',
+    desc:'화성 태안 3지구 B1BL 공동주택 신축공사 기본설계, 실시설계.',
+    images: ['images/itm/hwaseong2/01.jpg','images/itm/hwaseong2/02.jpg'] },
+
+  hanam:      { name:'하남 지역현안 2지구',                   co:'HEERIM Architects & Planners', period:'2016 — 2018', type:'T/K SPM',
+    desc:'하남지역현안 2지구 T/K SPM 담당.',
+    images: ['images/heelim/hanam/01.jpg','images/heelim/hanam/02.jpg','images/heelim/hanam/03.jpg','images/heelim/hanam/04.jpg','images/heelim/hanam/05.jpg','images/heelim/hanam/06.jpg','images/heelim/hanam/07.jpg','images/heelim/hanam/08.jpg','images/heelim/hanam/09.jpg'] },
+
+  songdo:     { name:'송도 6·8공구',                          co:'HEERIM Architects & Planners', period:'2016 — 2018', type:'개발사업시행자 공모 PF 당선',
+    desc:'송도 6,8공구 개발사업시행자 공모 PF 당선 팀원.',
+    images: ['images/heelim/songdo/01.jpg'] },
+
+  eunma:      { name:'대치은마아파트\n주택재건축정비사업',    co:'HEERIM Architects & Planners', period:'2016 — 2018', type:'현상설계 당선',
+    desc:'대치은마아파트 주택재건축정비사업 현상설계 당선 팀원.',
+    images: ['images/heelim/eunma/01.jpg','images/heelim/eunma/02.jpg','images/heelim/eunma/03.jpg','images/heelim/eunma/04.jpg','images/heelim/eunma/05.jpg','images/heelim/eunma/06.jpg','images/heelim/eunma/07.jpg'] },
+
+  haengjeong: { name:'행정중심복합도시\n1-5생활권 H9BL',      co:'HEERIM Architects & Planners', period:'2016 — 2018', type:'현상설계 당선',
+    desc:'행정중심복합도시 1-5 생활권 H9BL 현상설계 당선 팀원.',
+    images: ['images/heelim/haengjeong/01.jpg','images/heelim/haengjeong/02.jpg','images/heelim/haengjeong/03.jpg','images/heelim/haengjeong/04.jpg','images/heelim/haengjeong/05.jpg','images/heelim/haengjeong/06.jpg'] }
+};
+
+/* ══════════════════════════════════════════
+   EDU DATA
+══════════════════════════════════════════ */
+const EDU = {
+  korea: {
+    name: '대학원', nameEn: 'Graduate School', sub: '건축학 석사',
+    period: '2010.03 — 2012.08',
+    desc: '대학원 건축학과 졸업. 졸업논문: 데이비드 아자예의 건축에 표현된 제3의 공간에 관한 연구.',
+    images: ['images/education/korea/01.jpg','images/education/korea/02.jpg','images/education/korea/03.jpg','images/education/korea/04.jpg','images/education/korea/05.jpg','images/education/korea/06.jpg','images/education/korea/07.jpg','images/education/korea/08.jpg','images/education/korea/09.jpg','images/education/korea/10.jpg','images/education/korea/11.jpg','images/education/korea/12.jpg']
+  },
+  intern: {
+    name: '해외 인턴', nameEn: 'Overseas Internship', sub: '인턴십',
+    period: '2011.03 — 2011.08',
+    desc: 'destefano Partners (현 SMPD) 인턴 근무. 미국 시카고.',
+    images: ['images/education/intern/01.jpg','images/education/intern/02.jpg','images/education/intern/03.jpg','images/education/intern/04.jpg','images/education/intern/05.jpg','images/education/intern/06.jpg','images/education/intern/07.jpg','images/education/intern/08.jpg','images/education/intern/09.jpg','images/education/intern/10.jpg','images/education/intern/11.jpg','images/education/intern/12.jpg','images/education/intern/13.jpg','images/education/intern/14.jpg','images/education/intern/15.jpg','images/education/intern/17.jpg','images/education/intern/18.jpg','images/education/intern/19.jpg','images/education/intern/20.jpg','images/education/intern/21.jpg','images/education/intern/22.jpg','images/education/intern/23.jpg','images/education/intern/24.jpg','images/education/intern/26.jpg']
+  },
+  daejin: {
+    name: '학부', nameEn: 'Undergraduate', sub: '건축공학 학사 (4년제)',
+    period: '2004.03 — 2010.02',
+    desc: '',
+    images: ['images/education/daejin/01.jpg','images/education/daejin/02.jpg','images/education/daejin/03.jpg','images/education/daejin/04.jpg','images/education/daejin/05.jpg','images/education/daejin/06.jpg','images/education/daejin/07.jpg']
+  },
+  gdl: {
+    name: '지디엘건축사사무소', nameEn: 'GDL Architects', sub: '대리',
+    period: '2013.02 — 2016.03',
+    crumb: 'GDL Architects  /  CAREER',
+    desc: '',
+    images: [
+      'images/gdl/01.jpg','images/gdl/02.jpg','images/gdl/03.jpg','images/gdl/04.jpg','images/gdl/05.jpg','images/gdl/06.jpg',
+      'images/gdl/07.jpg','images/gdl/08.jpg','images/gdl/09.jpg','images/gdl/10.jpg','images/gdl/11.jpg','images/gdl/12.jpg',
+      'images/gdl/13.jpg','images/gdl/14.jpg','images/gdl/15.jpg','images/gdl/16.jpg','images/gdl/17.jpg','images/gdl/18.jpg',
+      'images/gdl/19.jpg','images/gdl/20.jpg','images/gdl/21.jpg','images/gdl/22.jpg','images/gdl/23.jpg','images/gdl/24.jpg'
+    ],
+    projects: [
+      { name:'트레저아일랜드 리조트동 계획안', year:'2015' },
+      { name:'트레저아일랜드 보물섬상가 계획안', year:'2015' },
+      { name:'경기도 성남시 분당구 구미동 연립주택', year:'2015' },
+      { name:'서울시 노원구 창동 스타벅스 드라이브인 스루 계획안', year:'2015' },
+      { name:'서울시 용산구 한남동 루가시트사옥 계획안', year:'2015' },
+      { name:'경기도 고양시 백석동 복합시설 계획안', year:'2015' },
+      { name:'인천 제일여성병원 증축공사', year:'2014' },
+      { name:'경기도 안산시 원시동 지식산업센터 TAKRA II 신축공사', year:'2014' },
+      { name:'은혜마을 재가복지센터 증축공사', year:'2014' },
+      { name:'(주)진양제약 원주GMP공장 신축공사', year:'2014' },
+      { name:'(주)비씨월드제약 GMP공장 증축공사', year:'2014' },
+      { name:'서울혁신파크 리모델링', year:'2014' },
+      { name:'경기도 고양시 밀산 금계·박석 초등학교 증축공사', year:'2014' },
+      { name:'경기도 안산시 고잔동 오피스텔 신축공사', year:'2013' },
+      { name:'우즈베키스탄 직업교육원 현상설계', year:'2013' },
+      { name:'명동제일빌딩 리노베이션 계획안', year:'2013' },
+      { name:'경기도 파주시 야당동 도무스데카 102동 신축공사', year:'2013' },
+      { name:'경기도 파주시 야당동 도무스데카 101동 신축공사', year:'2013' },
+      { name:'반포수난구조대 신축공사 외 준공 작품', year:'2013' },
+      { name:'서울시 도봉구 방학동 도시형생활주택 신축공사', year:'2013' }
+    ]
+  }
+};
+
+/* ══════════════════════════════════════════
+   TIMELINE
+══════════════════════════════════════════ */
+document.querySelectorAll('.tl-item.company').forEach(item => {
+  const key = item.dataset.co;
+  const co  = CO[key];
+  if (!co) return;
+
+  // 비어있는 옆 칼럼에 프로젝트 패널(가지) 생성.
+  // GDL은 회사 상세페이지(학부/대학원과 동일한 갤러리형)로 별도 이동하므로
+  // .tl-item.edu로 분류되어 있어 이 루프 대상이 아니다.
+  const panel = document.createElement('div');
+  panel.className = 'tl-proj-panel';
+
+  function makeRow(p) {
+    const row = document.createElement('div');
+    row.className = 'tl-proj-item' + (p.link ? '' : ' no-link');
+    row.innerHTML =
+      (p.link ? '<span class="tl-proj-badge" title="SELECTED WORK"></span>' : '') +
+      `<span class="tl-proj-pname">${p.name.replace('\n',' ')}</span>` +
+      (p.year ? `<span class="tl-proj-year">${p.year}</span>` : '') +
+      (p.link ? '<span class="tl-proj-arr">→</span>' : '');
+    if (p.link && p.id) {
+      row.addEventListener('click', e => { e.stopPropagation(); openProject(p.id, co.name); });
+      row.addEventListener('mouseenter', () => document.body.classList.add('hov'));
+      row.addEventListener('mouseleave', () => document.body.classList.remove('hov'));
+    }
+    return row;
+  }
+
+  // 대표작(SELECTED WORK)만 기본으로 보여주고, 나머지는 "+N건 더보기"로 접어둔다.
+  // 회사별 프로젝트 수가 최대 40건까지 있어 전부 펼치면 옆/아래 타임라인 항목과
+  // 시각적으로 겹치므로, 가지가 항상 짧고 단정하게 유지되도록 한다.
+  const selected = co.projects.filter(p => p.link);
+  const rest      = co.projects.filter(p => !p.link);
+  selected.forEach(p => panel.appendChild(makeRow(p)));
+
+  if (rest.length) {
+    const details = document.createElement('details');
+    details.className = 'tl-proj-more';
+    const summary = document.createElement('summary');
+    summary.textContent = `${rest.length}건 더보기`;
+    summary.addEventListener('mouseenter', () => document.body.classList.add('hov'));
+    summary.addEventListener('mouseleave', () => document.body.classList.remove('hov'));
+    details.appendChild(summary);
+    rest.forEach(p => details.appendChild(makeRow(p)));
+    details.addEventListener('click', e => e.stopPropagation());
+    details.addEventListener('toggle', () => requestAnimationFrame(reflowExpansions));
+    panel.appendChild(details);
+  }
+
+  // 회사 정보가 tl-left에 있으면(=오른쪽이 비어있으면) 패널은 오른쪽 여백에,
+  // tl-right에 있으면 왼쪽 여백에 뜨도록 한다. .tl-item에 직접 추가해야
+  // (a) 절대위치 기준이 전체 폭이 되어 정확한 반대쪽 계산이 되고
+  // (b) 모바일 단일 컬럼에서도 항상 회사 정보 다음(DOM 마지막)에 오게 된다.
+  const infoIsLeft = item.querySelector('.tl-left').children.length > 0;
+  panel.classList.add(infoIsLeft ? 'side-right' : 'side-left');
+  item.appendChild(panel);
+
+  const toggle = document.createElement('span');
+  toggle.className = 'tl-toggle';
+  toggle.textContent = '▾';
+  item.querySelector('.tl-name').appendChild(toggle);
+
+  item.addEventListener('click', () => {
+    item.classList.toggle('panel-open');
+    requestAnimationFrame(reflowExpansions);
+  });
+});
+
+/* ══════════════════════════════════════════
+   C OVERLAY — 이미지 슬라이드
+   좌측 정보 패널은 고정, 우측은 화살표/키보드로 넘기는 1장씩 슬라이드.
+   스크롤 없이 한 화면에 프로젝트 정보 + 이미지가 들어오도록 한다.
+══════════════════════════════════════════ */
+const carState = { list: [], index: 0 };
+
+function renderCarousel(list, placeholderText, fitMode) {
+  const wrap = document.getElementById('c-images');
+  wrap.innerHTML = '';
+  carState.list = list;
+  carState.index = 0;
+
+  if (!list.length) {
+    wrap.innerHTML = `<div class="c-car-ph"><span class="c-img-ph">${placeholderText}</span></div>`;
+    return;
+  }
+
+  const imgClass = fitMode === 'contain' ? 'c-car-img contain' : 'c-car-img';
+  wrap.innerHTML = `
+    <div class="c-carousel">
+      <img class="${imgClass}" id="c-car-img" src="${list[0]}" alt="">
+      ${list.length > 1 ? `
+        <button class="c-car-arrow prev" id="c-car-prev" aria-label="이전 이미지">←</button>
+        <button class="c-car-arrow next" id="c-car-next" aria-label="다음 이미지">→</button>
+        <div class="c-car-count" id="c-car-count">1 / ${list.length}</div>
+      ` : ''}
+    </div>`;
+
+  if (list.length > 1) {
+    document.getElementById('c-car-prev').addEventListener('click', () => stepCarousel(-1));
+    document.getElementById('c-car-next').addEventListener('click', () => stepCarousel(1));
+  }
+}
+
+function renderInternCollage(list) {
+  const wrap = document.getElementById('c-images');
+  wrap.innerHTML = '';
+  if (!list.length) {
+    wrap.innerHTML = `<div class="c-car-ph"><span class="c-img-ph">이미지 준비중</span></div>`;
+    return;
+  }
+  const n = list.length;
+  const W = wrap.clientWidth  || 800;
+  const H = wrap.clientHeight || 600;
+
+  /* 컨테이너 비율로 최적 열 수 계산 — 빈 셀 최소화 */
+  let cols = Math.max(3, Math.round(Math.sqrt(n * W / H)));
+  let rows = Math.ceil(n / cols);
+  /* 열을 하나 줄였을 때 빈 셀이 더 적으면 채택 */
+  if (cols > 3) {
+    const altCols = cols - 1;
+    const altRows = Math.ceil(n / altCols);
+    if (altCols * altRows - n < cols * rows - n) { cols = altCols; rows = altRows; }
+  }
+
+  const total = cols * rows;
+  const cells = [...list, ...Array(total - n).fill(null)];
+  const html = cells.map(src =>
+    src ? `<img src="${src}" alt="">` : `<div class="c-collage-empty"></div>`
+  ).join('');
+
+  wrap.innerHTML = `<div class="c-collage" style="grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr)">${html}</div>`;
+}
+
+function renderGallery(list, placeholderText) {
+  const wrap = document.getElementById('c-images');
+  wrap.innerHTML = '';
+  if (!list.length) {
+    wrap.innerHTML = `<div class="c-car-ph"><span class="c-img-ph">${placeholderText}</span></div>`;
+    return;
+  }
+  const n = list.length;
+  const cols = n === 1 ? 1 : n <= 4 ? 2 : n <= 9 ? 3 : 4;
+  wrap.innerHTML = `<div class="c-gallery" style="column-count:${cols};column-width:auto">${list.map(src => `<img src="${src}" alt="">`).join('')}</div>`;
+}
+
+function stepCarousel(dir) {
+  const { list } = carState;
+  if (!list.length) return;
+  carState.index = (carState.index + dir + list.length) % list.length;
+  document.getElementById('c-car-img').src = list[carState.index];
+  document.getElementById('c-car-count').textContent = `${carState.index + 1} / ${list.length}`;
+}
+
+/* 컨테이너 폭을 넘는 한 단어짜리 제목(예: "Undergraduate")이 단어 중간에서
+   줄바꿈되지 않도록, 자연 폭이 넘칠 때만 폰트 크기를 줄여 한 줄에 맞춘다. */
+function fitHeading(el) {
+  el.style.fontSize = '';
+  el.style.whiteSpace = '';
+  const text = el.textContent.trim();
+  if (!text || /\s/.test(text)) return;
+  const available = el.clientWidth;
+  el.style.whiteSpace = 'nowrap';
+  const natural = el.scrollWidth;
+  if (natural > available) {
+    const base = parseFloat(getComputedStyle(el).fontSize);
+    el.style.fontSize = (base * available / natural * 0.94) + 'px';
+  }
+  el.style.whiteSpace = '';
+}
+
+function openProject(id, coName) {
+  const p = PROJ[id]; if (!p) return;
+  document.getElementById('c-extra').style.display = 'none';
+  document.getElementById('c-projlist').style.display = 'none';
+  document.getElementById('c-crumb').textContent = `${coName}  /  PROJECT`;
+  const nameEl = document.getElementById('c-name');
+  nameEl.innerHTML = p.name.replace('\n',' ');
+  fitHeading(nameEl);
+  document.getElementById('c-meta').innerHTML    =
+    `<span>${p.period}</span><span>${p.co}</span><span>${p.type}</span>`;
+  document.getElementById('c-desc').textContent  = p.desc;
+
+  const fitMode = p.co === 'EDIT COLLECTIVE' ? 'contain' : 'cover';
+  renderCarousel(p.images || [], 'IMAGE 01', fitMode);
+  showOv('c-ov');
+}
+
+/* ══════════════════════════════════════════
+   EDU OVERLAY
+══════════════════════════════════════════ */
+function openEdu(key) {
+  const e = EDU[key]; if (!e) return;
+  document.getElementById('c-crumb').textContent = e.crumb || 'EDUCATION';
+  const nameEl = document.getElementById('c-name');
+  nameEl.textContent = e.nameEn;
+  fitHeading(nameEl);
+  document.getElementById('c-meta').innerHTML    = `<span>${e.name}</span><span>${e.period}</span><span>${e.sub}</span>`;
+  document.getElementById('c-desc').textContent  = e.desc;
+
+  const extra = document.getElementById('c-extra');
+  if (e.extra) {
+    extra.style.display = 'block';
+    extra.innerHTML =
+      `<span class="c-extra-label">${e.extra.label}</span>` +
+      `<div class="c-extra-name">${e.extra.name}</div>` +
+      `<div class="c-extra-detail">${e.extra.detail}</div>`;
+  } else {
+    extra.style.display = 'none';
+  }
+
+  const projlist = document.getElementById('c-projlist');
+  if (e.projects && e.projects.length) {
+    projlist.style.display = 'block';
+    projlist.innerHTML = `<span class="c-projlist-label">PROJECTS</span>` +
+      e.projects.map(p =>
+        `<div class="c-projlist-item"><span class="c-projlist-name">${p.name}</span><span class="c-projlist-year">${p.year}</span></div>`
+      ).join('');
+  } else {
+    projlist.style.display = 'none';
+  }
+
+  if (key !== 'intern') renderGallery(e.images || [], '이미지 준비중');
+  showOv('c-ov');
+  if (key === 'intern') {
+    const imgs = e.images || [];
+    requestAnimationFrame(() => renderInternCollage(imgs));
+  }
+}
+
+document.querySelectorAll('.tl-item.edu').forEach(item => {
+  item.addEventListener('click', () => openEdu(item.dataset.edu));
+});
+
+/* 화면 리사이즈 시 인턴 콜라주 재계산 */
+let _internResizeTimer;
+window.addEventListener('resize', () => {
+  if (document.getElementById('c-ov').classList.contains('open') &&
+      document.querySelector('.c-collage')) {
+    clearTimeout(_internResizeTimer);
+    _internResizeTimer = setTimeout(() => renderInternCollage(EDU.intern.images || []), 150);
+  }
+});
+
+/* ══════════════════════════════════════════
+   OVERLAY UTILS
+══════════════════════════════════════════ */
+/* 오버레이를 열 때마다 history state를 하나 쌓아, 브라우저 뒤로가기 시
+   페이지를 이탈하는 대신 열려있는 오버레이가 닫히도록 함 */
+let ovStack = [];
+function showOv(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+  ovStack.push(id);
+  history.pushState({ ov: id }, '');
+}
+function hideOv(id) {
+  document.getElementById(id).classList.remove('open');
+  ovStack = ovStack.filter(x => x !== id);
+  if (!document.querySelector('.overlay.open')) document.body.style.overflow = '';
+}
+function closeAll() {
+  document.querySelectorAll('.overlay.open').forEach(el => el.classList.remove('open'));
+  document.body.style.overflow = '';
+  ovStack = [];
+}
+window.addEventListener('popstate', () => {
+  const id = ovStack[ovStack.length - 1];
+  if (id) hideOv(id);
+});
+
+document.getElementById('c-close').addEventListener('click', () => hideOv('c-ov'));
+document.getElementById('c-home').addEventListener('click', closeAll);
+
+/* ══════════════════════════════════════════
+   AI LAB — 클릭형 별도 페이지
+══════════════════════════════════════════ */
+document.querySelector('.nav-ailab').addEventListener('click', e => { e.preventDefault(); showOv('ailab-ov'); });
+document.getElementById('ailab-close').addEventListener('click', () => hideOv('ailab-ov'));
+document.getElementById('ailab-home').addEventListener('click', closeAll);
+// ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const open = [...document.querySelectorAll('.overlay.open')];
+    if (open.length) hideOv(open[open.length - 1].id);
+    return;
+  }
+  if (!document.getElementById('c-ov').classList.contains('open')) return;
+  if (e.key === 'ArrowRight') stepCarousel(1);
+  if (e.key === 'ArrowLeft')  stepCarousel(-1);
+});
+
+/* ══════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════ */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => { if (en.isIntersecting) en.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.tl-item').forEach((el, i) => {
+  el.style.transitionDelay = (i * .07) + 's';
+  io.observe(el);
+});
+
+/* ══════════════════════════════════════════
+   TIMELINE — 연도 눈금축 배치 (데스크톱 전용)
+   각 항목을 실제 시작 연월에 비례한 위치에 절대배치하고
+   중앙선 옆에 연도 눈금/라벨을 그림. 모바일(≤640px)은 기존 단일 컬럼 유지.
+══════════════════════════════════════════ */
+const timelineEl = document.querySelector('.timeline');
+const tlTicksEl  = document.getElementById('tl-ticks');
+const TL_AXIS_START   = new Date(2004, 2, 1);
+const TL_EDU_END      = new Date(2013, 1, 1);  // 학업(학부·대학원) 구간과 경력 구간의 경계 = 첫 회사(GDL) 입사 시점
+const TL_PX_PER_YEAR     = 72;   // 경력 구간 스케일 — 회사 클릭 시 프로젝트 패널이 자동으로 간격을 벌려주므로 기본 간격은 타이트하게
+const TL_EDU_PX_PER_YEAR = 32;   // 학업 구간 스케일 — 콘텐츠가 적어 균등 간격 시 여백만 커지므로 압축
+const TL_PAD = 30;
+
+function monthsBetween(a, b) {
+  return (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+}
+
+/* "+N건 더보기"를 펼치면 그 회사 카드가 원래 슬롯보다 훨씬 커지는데,
+   축 모드에서는 카드가 날짜 기준 절대좌표라 아래(이후 시점) 카드들과
+   겹치게 된다. DOM 순서(=최신→과거) 기준으로 펼쳐진 만큼 누적 오프셋을
+   구해 그 이후 카드들을 실제로 밀어 내린다. */
+function reflowExpansions() {
+  if (!timelineEl.classList.contains('tl-axis-mode')) return;
+  let extra = 0;
+  document.querySelectorAll('.tl-item[data-start]').forEach(el => {
+    const base = parseFloat(el.dataset.baseTop || '0');
+    el.style.top = (base + extra) + 'px';
+    // 패널 자체가 닫혀있으면(opacity:0) 내부 details가 열려있어도 보이지
+    // 않으므로 다음 카드를 밀어낼 필요가 없다.
+    const openDetails = el.classList.contains('panel-open') ? el.querySelector('.tl-proj-more[open]') : null;
+    if (openDetails) extra += openDetails.offsetHeight;
+  });
+  const lastEl = document.querySelector('.tl-item[data-start]:last-of-type');
+  if (lastEl) {
+    timelineEl.style.height = (parseFloat(lastEl.dataset.baseTop || '0') + extra + 200) + 'px';
+  }
+}
+
+function layoutTimelineAxis() {
+  const isAxis = window.innerWidth > 640;
+  timelineEl.classList.toggle('tl-axis-mode', isAxis);
+
+  if (!isAxis) {
+    timelineEl.style.height = '';
+    document.querySelectorAll('.tl-item[data-start]').forEach(el => { el.style.top = ''; });
+    tlTicksEl.innerHTML = '';
+    return;
+  }
+
+  const now = new Date();
+  const workMonths = monthsBetween(TL_EDU_END, now);
+  const eduMonths  = monthsBetween(TL_AXIS_START, TL_EDU_END);
+  const workHeight = (workMonths / 12) * TL_PX_PER_YEAR;
+  const eduHeight  = (eduMonths / 12) * TL_EDU_PX_PER_YEAR;
+  const totalHeight = workHeight + eduHeight + TL_PAD * 2;
+  timelineEl.style.height = totalHeight + 'px';
+
+  // 경력 구간(TL_EDU_END 이후)은 TL_PX_PER_YEAR로, 학업 구간(그 이전)은 압축된
+  // TL_EDU_PX_PER_YEAR로 계산해 두 구간을 이어붙인다 (piecewise linear axis).
+  function topForDate(d) {
+    if (d >= TL_EDU_END) {
+      const distFromNow = monthsBetween(d, now);
+      return TL_PAD + (distFromNow / 12) * TL_PX_PER_YEAR;
+    }
+    const monthsFromDToEnd = monthsBetween(d, TL_EDU_END);
+    return TL_PAD + workHeight + (monthsFromDToEnd / 12) * TL_EDU_PX_PER_YEAR;
+  }
+
+  document.querySelectorAll('.tl-item[data-start]').forEach(el => {
+    const [y, m] = el.dataset.start.split('-').map(Number);
+    const top = topForDate(new Date(y, m - 1, 1));
+    el.dataset.baseTop = top;
+    el.style.top = top + 'px';
+  });
+  reflowExpansions();
+
+  tlTicksEl.innerHTML = '';
+  for (let y = TL_AXIS_START.getFullYear(); y <= now.getFullYear(); y++) {
+    const top = topForDate(new Date(y, 0, 1));
+    const tick = document.createElement('div');
+    tick.className = 'tl-tick';
+    tick.style.top = top + 'px';
+    tlTicksEl.appendChild(tick);
+    if (y % 2 === 0 || y === now.getFullYear()) {
+      const label = document.createElement('div');
+      label.className = 'tl-tick-label';
+      label.style.top = top + 'px';
+      label.textContent = `'${String(y).slice(2)}`;
+      tlTicksEl.appendChild(label);
+    }
+  }
+}
+layoutTimelineAxis();
+window.addEventListener('resize', debounce(layoutTimelineAxis));
+
+document.getElementById('ft-year').textContent = `© ${new Date().getFullYear()}`;
+</script>
+</body>
+</html>
