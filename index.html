@@ -19,12 +19,23 @@
   <meta name="twitter:image" content="images/yegawon2/sungsan/01.jpg">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230c0c0c'/%3E%3Ctext x='50' y='62' font-family='Helvetica,Arial,sans-serif' font-weight='700' font-size='42' fill='%23f0f0f0' text-anchor='middle'%3ECH%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    :root { --bg: #0c0c0c; --white: #f0f0f0; --line: rgba(240,240,240,.07); }
+    :root {
+      --bg: #0c0c0c; --white: #f0f0f0; --line: rgba(240,240,240,.07);
+      --font-display: 'Space Grotesk', 'Inter', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+    }
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--white); font-family: 'Inter', Helvetica, Arial, sans-serif; overflow-x: hidden; cursor: none; word-break: keep-all; overflow-wrap: break-word; }
+
+    /* 건축 도면 스펙 라벨 느낌의 모노스페이스 — 날짜·태그·카운트 등 짧은 시스템 라벨 전용 */
+    .section-tag, .cv-label, .tl-period, .tl-tick-label, .tl-proj-idx, .tl-proj-year,
+    .ov-crumb, .tool-cat, .ft-label, .c-car-count, .c-projlist-year, .ailab-sub,
+    .c-meta span, .tl-proj-more summary, .nav-menu a {
+      font-family: var(--font-mono);
+    }
 
     /* ── CURSOR ── */
     #cur-dot  { position: fixed; z-index: 9999; width: 6px; height: 6px; background: white; border-radius: 50%; transform: translate(-50%,-50%); pointer-events: none; }
@@ -35,6 +46,29 @@
     @media (hover: none) {
       #cur-dot, #cur-ring { display: none; }
       body { cursor: auto; }
+    }
+
+    /* ── CINEMATIC FX (vignette + grain) ──
+       고정 오버레이 레이어. 오버레이(.overlay, z-index:960)는 불투명 배경이라
+       열리면 이 레이어를 자연히 덮으므로 프로젝트 사진 위에는 얹히지 않는다. */
+    #cine-fx {
+      position: fixed; inset: 0; z-index: 5; pointer-events: none;
+      background:
+        radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.55) 100%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: cover, 120px 120px;
+      opacity: .05;
+      mix-blend-mode: overlay;
+    }
+
+    /* 앰비언트 글로우 블롭 — 매우 옅게, #cover 배경에 깊이감만 더함 */
+    .glow-blob { position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:1; }
+    .glow-a { width:520px; height:520px; top:-8%; left:6%; background:radial-gradient(circle, #ffffff, transparent 70%); opacity:.05; animation:blobDriftA 22s ease-in-out infinite; }
+    .glow-b { width:640px; height:640px; bottom:-15%; right:4%; background:radial-gradient(circle, #ffffff, transparent 70%); opacity:.035; animation:blobDriftB 26s ease-in-out infinite; }
+    @keyframes blobDriftA { 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(26px,-18px) scale(1.08); } }
+    @keyframes blobDriftB { 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(-22px,20px) scale(1.05); } }
+    @media (prefers-reduced-motion: reduce) {
+      .glow-a, .glow-b { animation: none; }
     }
 
     /* ── NAV ── */
@@ -62,15 +96,22 @@
       position: absolute; top: 80px; left: 56px; z-index: 10; pointer-events: none;
       font-size: 8.5px; font-weight: 400;
       letter-spacing: .22em; color: rgba(255,255,255,.28); text-transform: uppercase;
+      animation: cineFadeUp .9s cubic-bezier(.22,1,.36,1) .3s both;
     }
     .cover-scroll {
       position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%);
       display: flex; flex-direction: column; align-items: center; gap: 14px;
       font-size: 8px; letter-spacing: .28em; color: rgba(255,255,255,.18);
       z-index: 7; pointer-events: none;
+      animation: cineFadeUpCentered .9s cubic-bezier(.22,1,.36,1) .6s both;
     }
     .scroll-bar { width: 1px; height: 48px; background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent); animation: barPulse 2.2s ease-in-out infinite; }
     @keyframes barPulse { 0%,100%{opacity:1;transform:scaleY(1)} 50%{opacity:.2;transform:scaleY(.5)} }
+    @keyframes cineFadeUp { from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+    @keyframes cineFadeUpCentered { from{ opacity:0; transform:translateX(-50%) translateY(10px); } to{ opacity:1; transform:translateX(-50%) translateY(0); } }
+    @media (prefers-reduced-motion: reduce) {
+      .cv-label, .cover-scroll { animation: none; }
+    }
 
     /* ── SECTION LABEL ── */
     .section-tag { font-size: 8px; letter-spacing: .36em; color: rgba(255,255,255,.18); text-transform: uppercase; padding: 0 80px; margin-bottom: 96px; display: flex; align-items: center; gap: 20px; }
@@ -106,9 +147,9 @@
 
     /* 연도축 모드: 항목을 실제 날짜에 비례해 절대 배치 */
     .timeline.tl-axis-mode { position:relative; }
-    .timeline.tl-axis-mode .tl-item { position:absolute; left:0; right:0; margin:0; align-items:start; transition: opacity .65s ease, transform .65s ease, top .35s ease; }
+    .timeline.tl-axis-mode .tl-item { position:absolute; left:0; right:0; margin:0; align-items:start; transition: opacity .5s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.34,1.56,.64,1), top .35s ease; }
     .timeline.tl-axis-mode .tl-dot  { margin-top:3px; }
-    .tl-item { display: grid; grid-template-columns: 1fr 60px 1fr; align-items: center; margin-bottom: 60px; position: relative; opacity:0; transform:translateY(18px); transition: opacity .65s ease, transform .65s ease; }
+    .tl-item { display: grid; grid-template-columns: 1fr 60px 1fr; align-items: center; margin-bottom: 60px; position: relative; opacity:0; transform:translateY(18px); transition: opacity .5s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.34,1.56,.64,1); }
     .tl-item:last-child { margin-bottom: 0; }
     .tl-item.visible { opacity:1; transform:translateY(0); }
     .tl-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.45); justify-self:center; position:relative; z-index:2; transition:all .3s ease; }
@@ -118,7 +159,7 @@
     .tl-left  { padding-right: 34px; text-align: right; }
     .tl-right { padding-left: 34px; }
     .tl-period { font-size:8px; letter-spacing:.14em; color:rgba(255,255,255,.22); margin-bottom:7px; font-variant-numeric:tabular-nums; }
-    .tl-name   { font-size:14px; font-weight:400; letter-spacing:.02em; line-height:1.45; color:var(--white); transition:opacity .3s; }
+    .tl-name   { font-family:var(--font-display); font-size:15px; font-weight:500; letter-spacing:-.005em; line-height:1.4; color:var(--white); transition:opacity .3s; }
     .tl-name-kr{ font-size:10px; color:rgba(255,255,255,.28); margin-top:2px; letter-spacing:.03em; }
     .tl-sub    { font-size:10px; color:rgba(255,255,255,.28); margin-top:5px; letter-spacing:.06em; }
     .tl-item.company, .tl-item.edu { cursor: none; }
@@ -128,27 +169,33 @@
        .tl-item의 마지막 자식으로 DOM에 추가되어(모바일에서 항상 회사정보 다음에
        옴) 데스크톱(축 모드)에서는 절대 위치로 회사 정보가 없는 반대쪽 여백에
        나뭇가지처럼 옆으로 펼쳐진다. 스크롤 박스 대신 얇은 stem 라인으로 연결감을 준다. */
+    /* 사각 프레임(글래스 배경+테두리) 없이, 트리형 지시선(트렁크→세로 스파인→
+       프로젝트별 가지)으로 회사에 속한 목록임을 표현 — 감싸는 박스는 없음 */
     .tl-proj-panel {
-      position:absolute; top:0; width:calc(50% - 44px);
+      position:absolute; top:0; width:calc(50% - 154px); padding-left:10px;
       opacity:0; pointer-events:none; text-align:left; z-index:40;
       transition:opacity .35s ease, transform .35s ease;
-      border-left:1px solid rgba(255,255,255,.1); padding-left:22px;
     }
-    .tl-proj-panel.side-right { left:calc(50% + 30px); transform:translateX(-6px); }
-    /* 왼쪽 여백에 펼쳐질 땐 stem 라인이 가운데 축(점) 쪽인 오른쪽에 오도록 반전 */
-    .tl-proj-panel.side-left  { right:calc(50% + 30px); transform:translateX(6px); border-left:none; border-right:1px solid rgba(255,255,255,.1); padding-left:0; padding-right:22px; }
+    .tl-proj-panel.side-right { left:calc(50% + 140px); transform:translateX(-6px); border-left:1px solid rgba(255,255,255,.14); }
+    .tl-proj-panel.side-left  { right:calc(50% + 140px); transform:translateX(6px); padding-left:0; padding-right:10px; border-right:1px solid rgba(255,255,255,.14); }
+    /* 트렁크 — 타임라인 점에서 나와 스파인(패널 테두리)에 닿는 가로선 */
+    .tl-proj-panel.side-right::before { content:''; position:absolute; left:-140px; top:7px; width:140px; height:0; border-top:1px solid rgba(255,255,255,.14); pointer-events:none; }
+    .tl-proj-panel.side-left::before  { content:''; position:absolute; right:-140px; top:7px; width:140px; height:0; border-top:1px solid rgba(255,255,255,.14); pointer-events:none; }
     .tl-item.company.panel-open .tl-proj-panel { opacity:1; pointer-events:all; transform:translateX(0); }
     .tl-toggle { display:inline-block; margin-left:7px; font-size:9px; color:rgba(255,255,255,.25); transition:transform .3s ease, color .3s ease; }
     .tl-item.company.panel-open .tl-toggle { transform:rotate(180deg); color:rgba(255,255,255,.65); }
-    .tl-proj-item { display:flex; align-items:baseline; gap:9px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); transition:padding-left .25s ease; }
+    .tl-proj-item { display:flex; align-items:baseline; gap:12px; padding:11px 0; position:relative; transition:padding-left .25s ease; }
     .tl-proj-item:not(.no-link) { cursor:none; }
     .tl-proj-item:hover:not(.no-link) { padding-left:6px; }
-    /* SELECTED WORK = 작은 점 아이콘. 큰 텍스트 배지 대신 최소한의 시각 신호만 준다 */
-    .tl-proj-badge { flex-shrink:0; width:5px; height:5px; border-radius:50%; background:var(--white); box-shadow:0 0 6px rgba(255,255,255,.4); align-self:center; }
-    .tl-proj-pname { font-size:11px; font-weight:300; flex:1; line-height:1.4; transition:opacity .25s, color .25s; }
-    .tl-proj-item:hover:not(.no-link) .tl-proj-pname { opacity:.38; }
+    /* 가지 — 스파인에서 각 프로젝트 행으로 갈라지는 짧은 가로선 */
+    .tl-proj-panel.side-right .tl-proj-item::before { content:''; position:absolute; left:-10px; top:50%; width:10px; height:0; border-top:1px solid rgba(255,255,255,.14); }
+    .tl-proj-panel.side-left  .tl-proj-item::before { content:''; position:absolute; right:-10px; top:50%; width:10px; height:0; border-top:1px solid rgba(255,255,255,.14); }
+    /* SELECTED WORK = 인덱스 번호. 배지/화살표 아이콘 대신 도면 목록 느낌의 넘버링만 사용 */
+    .tl-proj-idx { flex-shrink:0; width:18px; font-size:9px; letter-spacing:.02em; color:rgba(255,255,255,.24); font-variant-numeric:tabular-nums; transition:color .25s; }
+    .tl-proj-item:hover:not(.no-link) .tl-proj-idx { color:var(--white); }
+    .tl-proj-item.no-link .tl-proj-idx { color:rgba(255,255,255,.14); }
+    .tl-proj-pname { font-size:11px; font-weight:300; flex:1; line-height:1.4; }
     .tl-proj-item.no-link .tl-proj-pname { color:rgba(255,255,255,.4); }
-    .tl-proj-ptag { font-size:8px; letter-spacing:.1em; color:rgba(255,255,255,.17); flex-shrink:0; }
     .tl-proj-year { font-size:8px; letter-spacing:.06em; color:rgba(255,255,255,.22); flex-shrink:0; font-variant-numeric:tabular-nums; }
     /* "+N건 더보기" — 대표작 외 나머지 프로젝트를 접어두는 토글 */
     .tl-proj-more summary { list-style:none; cursor:none; padding:9px 0; font-size:9px; letter-spacing:.06em; color:rgba(255,255,255,.3); transition:color .25s; }
@@ -157,8 +204,6 @@
     .tl-proj-more summary::before { content:'＋ '; }
     .tl-proj-more[open] summary::before { content:'－ '; }
     .tl-proj-more[open] summary { color:rgba(255,255,255,.5); }
-    .tl-proj-arr { font-size:11px; color:rgba(255,255,255,.15); flex-shrink:0; transition:transform .25s, color .25s; }
-    .tl-proj-item:hover:not(.no-link) .tl-proj-arr { transform:translateX(5px); color:white; }
 
     /* ── OVERLAYS ── */
     .overlay { position:fixed; inset:0; z-index:960; background:var(--bg); transform:translateY(102%); transition:transform .65s cubic-bezier(.76,0,.24,1); overflow-y:auto; display:flex; flex-direction:column; }
@@ -176,7 +221,7 @@
     #c-ov { overflow: hidden; }
     .c-body { flex:1; min-height:0; display:grid; grid-template-columns:min(400px, 34vw) 1fr; padding:0; }
     .c-info { padding:56px; display:flex; flex-direction:column; justify-content:center; overflow-y:auto; border-right:1px solid var(--line); }
-    .c-proj-name { font-size:clamp(28px,3.4vw,52px); font-weight:200; letter-spacing:-.03em; line-height:1.05; margin-bottom:28px; }
+    .c-proj-name { font-family:var(--font-display); font-size:clamp(28px,3.4vw,52px); font-weight:600; letter-spacing:-.015em; line-height:1.08; margin-bottom:28px; }
     .c-meta { display:flex; flex-direction:column; gap:8px; font-size:9px; letter-spacing:.14em; color:rgba(255,255,255,.3); padding:18px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:28px; }
     .c-desc { font-size:13px; color:rgba(255,255,255,.42); line-height:1.8; margin-bottom:0; }
     .c-images { position:relative; height:100%; overflow:hidden; background:rgba(255,255,255,.02); }
@@ -210,23 +255,28 @@
     /* ── AI LAB (overlay page) ── */
     .ailab-body { padding:72px 80px 120px; }
     .ailab-header { display:grid; grid-template-columns:1fr 1.2fr; gap:80px; align-items:start; margin-bottom:80px; }
-    .ailab-h   { font-size:clamp(28px,4vw,52px); font-weight:300; line-height:1.18; }
+    .ailab-h   { font-family:var(--font-display); font-size:clamp(28px,4vw,52px); font-weight:600; line-height:1.2; }
     .ailab-sub { font-size:10px; letter-spacing:.2em; color:rgba(255,255,255,.25); margin:14px 0 28px; }
     .ailab-quote { font-size:13px; color:rgba(255,255,255,.38); line-height:1.9; border-left:1px solid rgba(255,255,255,.1); padding-left:24px; }
     .ailab-qr { display:flex; align-items:center; gap:14px; margin-top:32px; padding-left:24px; }
     .ailab-qr img { width:60px; height:60px; background:#fff; padding:5px; border-radius:3px; display:block; }
     .ailab-qr span { font-size:9px; letter-spacing:.18em; color:rgba(255,255,255,.3); text-transform:uppercase; }
     .tool-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(255,255,255,.05); }
-    .tool-card { background:var(--bg); padding:38px 32px; }
+    .tool-card { background:var(--bg); padding:38px 32px; transition:background .4s ease, backdrop-filter .4s ease; }
+    .tool-card:hover { background:rgba(255,255,255,.035); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
     .tool-cat  { font-size:8px; letter-spacing:.26em; color:rgba(255,255,255,.18); text-transform:uppercase; margin-bottom:16px; }
     .tool-name { font-size:15px; font-weight:400; margin-bottom:10px; line-height:1.4; }
     .tool-desc { font-size:11px; color:rgba(255,255,255,.32); line-height:1.75; }
     .ailab-gallery { display:grid; grid-template-columns:repeat(5,1fr); gap:3px; margin-top:64px; }
     .ailab-gallery img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; background:rgba(255,255,255,.03); }
+    /* Motion 스크립트가 로드된 경우에만 초기 opacity:0 — 로드 실패 시 항상 보이는 상태 유지(점진적 향상) */
+    html.motion-ready .tool-card,
+    html.motion-ready .ailab-gallery img,
+    html.motion-ready footer > div { opacity: 0; }
 
     /* ── FOOTER ── */
     footer { padding:72px 80px; border-top:1px solid var(--line); display:grid; grid-template-columns:2fr 1fr 1fr; gap:60px; align-items:start; }
-    .ft-name  { font-size:30px; font-weight:300; letter-spacing:.01em; margin-bottom:8px; }
+    .ft-name  { font-family:var(--font-display); font-size:32px; font-weight:600; letter-spacing:0; margin-bottom:8px; }
     .ft-title { font-size:10px; color:rgba(255,255,255,.3); letter-spacing:.12em; }
     .ft-label { font-size:8px; letter-spacing:.28em; color:rgba(255,255,255,.18); text-transform:uppercase; margin-bottom:12px; margin-top:28px; }
     .ft-label:first-child { margin-top:0; }
@@ -243,6 +293,12 @@
     .section-tag { padding: 0 36px; }
     #work { padding: 100px 0 120px; }
     .timeline { max-width: 680px; padding: 0 16px; }
+    /* 좁아진 컨테이너에서는 140px 오프셋이 텍스트 폭을 너무 줄이므로 축소 */
+    .tl-proj-panel { width:calc(50% - 84px); }
+    .tl-proj-panel.side-right { left:calc(50% + 70px); }
+    .tl-proj-panel.side-left  { right:calc(50% + 70px); }
+    .tl-proj-panel.side-right::before { left:-70px; width:70px; }
+    .tl-proj-panel.side-left::before  { right:-70px; width:70px; }
     .ailab-header { grid-template-columns: 1fr; gap: 48px; }
     .tool-grid { grid-template-columns: repeat(2, 1fr); }
     .ailab-body { padding: 100px 48px; }
@@ -319,10 +375,10 @@
       left: auto; right: auto;
       margin-top: 14px;
     }
+    .tl-proj-panel::before { display: none; } /* 지시선은 옆 여백 branch 전용, 단일 컬럼에선 의미 없음 */
     .tl-toggle { display: none; }
     .tl-proj-item { padding: 11px 0; gap: 10px; }
     .tl-proj-pname { font-size: 11px; }
-    .tl-proj-ptag  { display: none; }
     /* 탭 시 들여쓰기 */
     .tl-proj-item:active:not(.no-link) { padding-left: 10px; }
 
@@ -366,6 +422,7 @@
 
 <div id="cur-dot"></div>
 <div id="cur-ring"></div>
+<div id="cine-fx"></div>
 
 <!-- ── NAV ── -->
 <nav>
@@ -379,6 +436,8 @@
 <!-- ══════════════ COVER ══════════════ -->
 <section id="cover">
   <canvas id="coverCanvas"></canvas>
+  <div class="glow-blob glow-a"></div>
+  <div class="glow-blob glow-b"></div>
   <span class="cv-label">Architecture Portfolio</span>
   <div class="cover-scroll">
     <div class="scroll-bar"></div>
@@ -639,20 +698,25 @@ addHover('a, button, .tl-item.company, .tl-item.edu');
 ══════════════════════════════════════════ */
 const CFG = {
   CONDENSE      : 0.62,  // 텍스트 가로 압축 비율
-  STRIPE_SPACING: 5,     // 줄 간격 (px)
+  STRIPE_SPACING: 5,     // 줄 간격 (px) — 배경 & 파티클 컬럼 공용
   THIN_W        : 0.9,   // 배경 줄 두께 (px)
-  THICK_W       : 4.0,   // 글자 줄 두께 (px)
+  THICK_W       : 4.0,   // 파티클(글자) 줄 두께 (px)
   ALPHA_BG      : 0.25,  // 배경 줄 불투명도
-  ALPHA_TEXT    : 1.0,   // 글자 줄 불투명도
+  ALPHA_TEXT    : 1.0,   // 파티클 불투명도
   STEP          : 4,     // 세그먼트 높이 (px) — 작을수록 글자 경계 정밀
-  BASE_AMP      : 0.8,   // 기본 sin 진폭 (px)
-  HOVER_MUL     : 9,     // hover 시 진폭 배수
-  EASE          : 0.08   // hover 전환 easing 속도
+  BASE_AMP      : 0.8,   // 배경 줄 기본 sin 진폭 (px)
+  HOVER_MUL     : 9,     // 배경 줄 hover 시 진폭 배수
+  EASE          : 0.08,  // hover 전환 easing 속도
+  REPEL_RADIUS  : 95,    // 커서 반발 영향 반경 (px)
+  REPEL_STRENGTH: 15,    // 반발력 세기
+  SPRING_K      : 0.11,  // 원위치로 되돌아가는 스프링 강도
+  FRICTION      : 0.86   // 속도 감쇠(마찰) — 낮을수록 빨리 멈춤
 };
 
 const cvs  = document.getElementById('coverCanvas');
 const cctx = cvs.getContext('2d');
-let W = 0, H = 0, mask, columns = [];
+let W = 0, H = 0, mask, columns = [], particles = [];
+const reduceMotionCanvas = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function buildMask() {
   const off  = document.createElement('canvas');
@@ -702,7 +766,8 @@ function isOn(x, y) {
   return mask[(y * W + x) * 4] > 128;
 }
 
-/* 컬럼별로 on/off 연속 구간을 미리 합쳐서 저장 → 프레임당 fillRect 호출 수를 대폭 축소 */
+/* 배경(글자 바깥) 컬럼만 담당 — on/off 연속 구간 중 off(배경)만 병합 저장해
+   프레임당 fillRect 호출 수를 축소. 글자(on) 영역은 buildParticles()가 담당. */
 function buildColumns() {
   columns = [];
   for (let x = CFG.STRIPE_SPACING / 2; x < W; x += CFG.STRIPE_SPACING) {
@@ -711,13 +776,25 @@ function buildColumns() {
     for (let y = 0; y < H; y += CFG.STEP) {
       const on = isOn(x, y);
       if (on !== curOn) {
-        runs.push({ y: runStart, h: count * CFG.STEP + 0.6, on: curOn });
+        if (!curOn) runs.push({ y: runStart, h: count * CFG.STEP + 0.6 });
         curOn = on; runStart = y; count = 0;
       }
       count++;
     }
-    runs.push({ y: runStart, h: count * CFG.STEP + 0.6, on: curOn });
+    if (!curOn) runs.push({ y: runStart, h: count * CFG.STEP + 0.6 });
     columns.push({ x, runs });
+  }
+}
+
+/* 글자(on) 영역을 촘촘한 파티클 격자로 변환 — 각 파티클은 커서에서 반발했다가
+   스프링으로 원위치(tx,ty)에 되돌아온다. 정지 상태에선 기존 바코드 글자와
+   동일한 밀도로 빈틈없이 붙어 보이도록 배경과 같은 STRIPE_SPACING/STEP 간격 사용. */
+function buildParticles() {
+  particles = [];
+  for (let x = CFG.STRIPE_SPACING / 2; x < W; x += CFG.STRIPE_SPACING) {
+    for (let y = 0; y < H; y += CFG.STEP) {
+      if (isOn(x, y)) particles.push({ tx: x, ty: y, x, y, vx: 0, vy: 0 });
+    }
   }
 }
 
@@ -726,6 +803,7 @@ function resize() {
   H = cvs.height = cvs.offsetHeight;
   buildMask();
   buildColumns();
+  buildParticles();
 }
 resize();
 document.fonts.ready.then(resize);
@@ -746,6 +824,20 @@ cvs.addEventListener('touchstart',  () => { tgtIntensity = CFG.HOVER_MUL; }, { p
 cvs.addEventListener('touchend',    () => { tgtIntensity = 1; });
 cvs.addEventListener('touchcancel', () => { tgtIntensity = 1; });
 
+/* 파티클 반발용 커서 좌표(캔버스 기준). 화면 밖(-9999)이면 반발 없음 */
+let pmx = -9999, pmy = -9999;
+cvs.addEventListener('mousemove', e => {
+  const r = cvs.getBoundingClientRect();
+  pmx = e.clientX - r.left; pmy = e.clientY - r.top;
+});
+cvs.addEventListener('mouseleave', () => { pmx = -9999; pmy = -9999; });
+cvs.addEventListener('touchmove', e => {
+  const r = cvs.getBoundingClientRect();
+  const touch = e.touches[0];
+  if (touch) { pmx = touch.clientX - r.left; pmy = touch.clientY - r.top; }
+}, { passive: true });
+cvs.addEventListener('touchend', () => { pmx = -9999; pmy = -9999; });
+
 (function drawCover() {
   if (!coverVisible) { requestAnimationFrame(drawCover); return; }
 
@@ -756,19 +848,38 @@ cvs.addEventListener('touchcancel', () => { tgtIntensity = 1; });
   const amp   = CFG.BASE_AMP * intensity;
   const speed = 0.018 + (intensity - 1) * 0.005;
 
-  let prevStyle = null;
+  /* 배경 줄 — 기존 그대로, sin 파동으로만 은은하게 움직임 */
+  cctx.fillStyle = SB;
   for (const col of columns) {
     const wobble = Math.sin(col.x * 0.04 + t) * amp;
     for (const r of col.runs) {
-      const sty = r.on ? ST : SB;
-      if (sty !== prevStyle) { cctx.fillStyle = prevStyle = sty; }
-      cctx.fillRect(
-        col.x - (r.on ? CFG.THICK_W : CFG.THIN_W) / 2 + wobble,
-        r.y,
-        r.on ? CFG.THICK_W : CFG.THIN_W,
-        r.h
-      );
+      cctx.fillRect(col.x - CFG.THIN_W / 2 + wobble, r.y, CFG.THIN_W, r.h);
     }
+  }
+
+  /* 글자 파티클 — 커서 반발 + 스프링 복원. reduced-motion 시 반발력을 꺼서
+     정지된 원래 글자 형태로만 렌더링(접근성) */
+  const repelR2 = CFG.REPEL_RADIUS * CFG.REPEL_RADIUS;
+  for (const p of particles) {
+    if (!reduceMotionCanvas) {
+      const dx = p.x - pmx, dy = p.y - pmy;
+      const distSq = dx * dx + dy * dy;
+      if (distSq < repelR2) {
+        const dist = Math.sqrt(distSq) || 0.001;
+        const force = (1 - dist / CFG.REPEL_RADIUS) * CFG.REPEL_STRENGTH;
+        p.vx += (dx / dist) * force;
+        p.vy += (dy / dist) * force;
+      }
+    }
+    p.vx = (p.vx + (p.tx - p.x) * CFG.SPRING_K) * CFG.FRICTION;
+    p.vy = (p.vy + (p.ty - p.y) * CFG.SPRING_K) * CFG.FRICTION;
+    p.x += p.vx;
+    p.y += p.vy;
+  }
+
+  cctx.fillStyle = ST;
+  for (const p of particles) {
+    cctx.fillRect(p.x - CFG.THICK_W / 2, p.y, CFG.THICK_W, CFG.STEP + 0.6);
   }
 
   t += speed;
@@ -1031,14 +1142,17 @@ document.querySelectorAll('.tl-item.company').forEach(item => {
   const panel = document.createElement('div');
   panel.className = 'tl-proj-panel';
 
+  // 인덱스 번호(01, 02, ...)는 대표작+더보기 항목 전체를 아우르는 하나의 연속
+  // 목록으로 매긴다 — 도면 목록/프로젝트 레지스터 같은 느낌을 주기 위함.
+  let rowCount = 0;
   function makeRow(p) {
+    rowCount += 1;
     const row = document.createElement('div');
     row.className = 'tl-proj-item' + (p.link ? '' : ' no-link');
     row.innerHTML =
-      (p.link ? '<span class="tl-proj-badge" title="SELECTED WORK"></span>' : '') +
+      `<span class="tl-proj-idx">${String(rowCount).padStart(2,'0')}</span>` +
       `<span class="tl-proj-pname">${p.name.replace('\n',' ')}</span>` +
-      (p.year ? `<span class="tl-proj-year">${p.year}</span>` : '') +
-      (p.link ? '<span class="tl-proj-arr">→</span>' : '');
+      (p.year ? `<span class="tl-proj-year">${p.year}</span>` : '');
     if (p.link && p.id) {
       row.addEventListener('click', e => { e.stopPropagation(); openProject(p.id, co.name); });
       row.addEventListener('mouseenter', () => document.body.classList.add('hov'));
@@ -1058,13 +1172,17 @@ document.querySelectorAll('.tl-item.company').forEach(item => {
     const details = document.createElement('details');
     details.className = 'tl-proj-more';
     const summary = document.createElement('summary');
-    summary.textContent = `${rest.length}건 더보기`;
+    const moreLabel = `${rest.length}건 더보기`;
+    summary.textContent = moreLabel;
     summary.addEventListener('mouseenter', () => document.body.classList.add('hov'));
     summary.addEventListener('mouseleave', () => document.body.classList.remove('hov'));
     details.appendChild(summary);
     rest.forEach(p => details.appendChild(makeRow(p)));
     details.addEventListener('click', e => e.stopPropagation());
-    details.addEventListener('toggle', () => requestAnimationFrame(reflowExpansions));
+    details.addEventListener('toggle', () => {
+      summary.textContent = details.open ? '접기' : moreLabel;
+      requestAnimationFrame(reflowExpansions);
+    });
     panel.appendChild(details);
   }
 
@@ -1168,7 +1286,10 @@ function stepCarousel(dir) {
   const { list } = carState;
   if (list.length <= 1) return;
   carState.index = (carState.index + dir + list.length) % list.length;
-  document.getElementById('c-car-img').src = list[carState.index];
+  const imgEl = document.getElementById('c-car-img');
+  const nextSrc = list[carState.index];
+  if (window.__motionCrossfade) window.__motionCrossfade(imgEl, nextSrc);
+  else imgEl.src = nextSrc;
   const counter = document.getElementById('c-car-count');
   if (counter) counter.textContent = `${carState.index + 1} / ${list.length}`;
 }
@@ -1205,6 +1326,7 @@ function openProject(id, coName) {
   const fitMode = p.co === 'EDIT COLLECTIVE' ? 'contain' : 'cover';
   renderCarousel(p.images || [], 'IMAGE 01', fitMode);
   showOv('c-ov');
+  if (window.__motionRevealOverlayContent) window.__motionRevealOverlayContent();
 }
 
 /* ══════════════════════════════════════════
@@ -1243,6 +1365,7 @@ function openEdu(key) {
 
   if (key !== 'intern') renderGallery(e.images || [], '이미지 준비중');
   showOv('c-ov');
+  if (window.__motionRevealOverlayContent) window.__motionRevealOverlayContent();
   if (key === 'intern') {
     const imgs = e.images || [];
     requestAnimationFrame(() => renderInternCollage(imgs));
@@ -1350,10 +1473,15 @@ function reflowExpansions() {
   document.querySelectorAll('.tl-item[data-start]').forEach(el => {
     const base = parseFloat(el.dataset.baseTop || '0');
     el.style.top = (base + extra) + 'px';
-    // 패널 자체가 닫혀있으면(opacity:0) 내부 details가 열려있어도 보이지
-    // 않으므로 다음 카드를 밀어낼 필요가 없다.
-    const openDetails = el.classList.contains('panel-open') ? el.querySelector('.tl-proj-more[open]') : null;
-    if (openDetails) extra += openDetails.offsetHeight;
+    // 패널이 열려있으면(SELECTED WORK만 보이는 기본 상태 포함) 그 실제 렌더
+    // 높이만큼 다음 카드들을 밀어낸다 — "더보기"로 더 펼쳐진 경우 그 늘어난
+    // 높이까지 offsetHeight에 자동 포함되므로 별도 계산 불필요.
+    // (이전엔 "더보기" 확장분만 계산해 기본 패널 높이를 누락 — 인접한 회사와
+    // 겹쳐 "더보기" 버튼이 클릭되지 않는 문제가 있었음)
+    if (el.classList.contains('panel-open')) {
+      const panel = el.querySelector('.tl-proj-panel');
+      if (panel) extra += panel.offsetHeight;
+    }
   });
   const lastEl = document.querySelector('.tl-item[data-start]:last-of-type');
   if (lastEl) {
@@ -1419,6 +1547,86 @@ layoutTimelineAxis();
 window.addEventListener('resize', debounce(layoutTimelineAxis));
 
 document.getElementById('ft-year').textContent = `© ${new Date().getFullYear()}`;
+</script>
+
+<!-- Motion (motion.dev) — vanilla ESM, no build step required.
+     모든 기능은 점진적 향상: 이 스크립트가 로드 실패해도(네트워크 차단 등)
+     기존 CSS 트랜지션/즉시 표시 상태로 사이트가 정상 동작한다. -->
+<script type="module">
+  import { animate, scroll, stagger, inView, spring } from "https://cdn.jsdelivr.net/npm/motion@12/+esm";
+  window.Motion = { animate, scroll, stagger, inView, spring };
+
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SPRING = { type: 'spring', stiffness: 140, damping: 20 };
+  const SPRING_NAV = { type: 'spring', stiffness: 300, damping: 24 };
+
+  /* 캐러셀 이미지 크로스페이드 — stepCarousel()에서 호출됨.
+     window.Motion 존재 여부와 무관하게 항상 정의해 즉시 폴백(src 즉시 교체)도 가능하게 함 */
+  window.__motionCrossfade = function (imgEl, nextSrc) {
+    if (reduceMotion) { imgEl.src = nextSrc; return; }
+    animate(imgEl, { opacity: [1, 0] }, { duration: .16, easing: 'ease-in' }).finished.then(() => {
+      imgEl.src = nextSrc;
+      animate(imgEl, { opacity: [0, 1], transform: ['scale(1.02)', 'scale(1)'] }, SPRING);
+    });
+  };
+
+  /* 오버레이 콘텐츠 스태거 리빌 — openProject/openEdu가 showOv() 직후 호출 */
+  window.__motionRevealOverlayContent = function () {
+    if (reduceMotion) return;
+    const els = ['c-name', 'c-meta', 'c-desc'].map(id => document.getElementById(id)).filter(Boolean);
+    if (!els.length) return;
+    animate(els, { opacity: [0, 1], transform: ['translateY(10px)', 'translateY(0)'] },
+      { ...SPRING, delay: stagger(.06) });
+  };
+
+  if (!reduceMotion) {
+    document.documentElement.classList.add('motion-ready');
+
+    /* 커버 히어로 — 스크롤에 따라 서서히 페이드 + 축소되는 시네마틱 패럴랙스 */
+    const coverEl = document.getElementById('cover');
+    if (coverEl) {
+      scroll(
+        animate(coverEl, { opacity: [1, 1, 0], scale: [1, 1, .94], y: [0, 0, -40] }),
+        { target: coverEl, offset: ['start start', 'end start'] }
+      );
+    }
+
+    /* AI LAB 툴카드 — 스크롤 진입 시 순차 리빌 */
+    document.querySelectorAll('.tool-card').forEach((el, i) => {
+      inView(el, () => {
+        animate(el, { opacity: [0, 1], transform: ['translateY(14px)', 'translateY(0)'] },
+          { ...SPRING, delay: (i % 3) * .06 });
+      }, { amount: .2 });
+    });
+
+    /* AI LAB 갤러리 이미지 */
+    document.querySelectorAll('.ailab-gallery img').forEach((el, i) => {
+      inView(el, () => {
+        animate(el, { opacity: [0, 1], transform: ['translateY(14px)', 'translateY(0)'] },
+          { ...SPRING, delay: (i % 5) * .05 });
+      }, { amount: .2 });
+    });
+
+    /* 푸터 컬럼 */
+    document.querySelectorAll('footer > div').forEach((el, i) => {
+      inView(el, () => {
+        animate(el, { opacity: [0, 1], transform: ['translateY(14px)', 'translateY(0)'] },
+          { ...SPRING, delay: i * .08 });
+      }, { amount: .3 });
+    });
+
+    /* 네비 마그네틱 hover */
+    document.querySelectorAll('.nav-logo, .nav-menu a').forEach(el => {
+      el.addEventListener('mousemove', e => {
+        const r = el.getBoundingClientRect();
+        const dx = (e.clientX - (r.left + r.width / 2)) * .18;
+        animate(el, { transform: `translateX(${dx}px)` }, SPRING_NAV);
+      });
+      el.addEventListener('mouseleave', () => {
+        animate(el, { transform: 'translateX(0px)' }, SPRING_NAV);
+      });
+    });
+  }
 </script>
 </body>
 </html>
